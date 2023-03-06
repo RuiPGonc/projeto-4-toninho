@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to-do-login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body id="login">
+  <main>
+    <div class="main-title-login">
+      <h1 >To Do List</h1>
+    </div>
+    <div class="container-login">   
+      <section>
+        <form> 
+          <div>
+            <input type="text" class="email-box" placeholder="utilizador" id="input-username" required>
+          </div>
+          <div>
+            <input type="password" class="password-box" id="input-password" placeholder="password" required>
+          </div>
+          <div>
+          <input id="login-button" class="login-button" type="button" onclick="login()" value="entrar"></input>
+          </div>
+          <div class="check">
+            <input class="remember-me" type="checkbox" value=""> lembrar-me
+          </div>
+        </form>
+          <a href="register.html">
+            <button id="signin-button" class="signin-button">novo registo</button>
+          </a>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer-login">
+    <p>&copy; AoR 2023</p>
+  </footer>
+
+  <script src="index.js"></script>
+</body>
+</html>

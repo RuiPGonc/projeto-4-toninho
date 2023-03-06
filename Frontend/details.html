@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to-do-detalhes</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </head>
+
+<body id="details">
+  <header>
+    <nav class="topnav">
+        <a href="index.html"><i class="fa fa-solid fa-power-off" onclick="logout()"></i></a>
+        <a href="home.html"><i class="fa fa-solid fa-home"></i></a>
+        <h4 id="utilizadorAtivo"></h4>
+        <button class="openSidebar" onclick="openNav()"><i class="fa-solid fa-bars"></i></button>
+        <a href="#" id="profile-picture-box" class="profile-picture-box"></a>
+        <h5 id="pageName">HOMEPAGE</h5>   
+    </nav>
+</header>
+
+<aside id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="edit-profile.html">editar perfil pessoal</a>
+    <a href="#" class="empty-link">   </a>
+    <a href="#" class="empty-link">   </a>
+    <a href="users-list.html">lista de utilizadores</a>
+    <a href="#">feature b</a>
+    <a href="#">feature c</a>
+</aside>
+
+  <main>
+    <div class="main-title-details">
+      <h1></h1>
+    </div>
+    <div class="container-details">
+      <form id="form-edit-task" action="">
+        <div class="row">
+            <label>tarefa</label>
+            <textarea class="text-edit-box" id="edit-title" onchange="changeButton()"></textarea>
+        </div>
+        <div class="row">
+            <label>descrição da tarefa</label>
+            <textarea class="text-edit-box" id="edit-description" onchange="changeButton()"></textarea>
+        </div>
+        <div class="row">
+          <label>prazo</label>
+          <input id="edit-deadline" type="date" onchange="changeButton()" onblur="checkDate()">
+          <label class="label-editCategory">categoria</label>
+
+          <input class="editCategory" id="edit-category" value="categoria" disabled> 
+          <i class="fa-solid fa-circle edit-dropbtn" id="edit-dropbtn" name="indefinida" onclick="dropFunction()"></i>
+          <div id="myDropdown" class="dropdown-category dropdown-category-override">
+            <i class="fa-solid fa-circle dropYellow" name="yellow" id="dropYellow" onclick="changeButton()"></i>
+            <i class="fa-solid fa-circle dropOrange" name="orange" id="dropOrange" onclick="changeButton()"></i>
+            <i class="fa-solid fa-circle dropRed" name="red" id="dropRed" onclick="changeButton()"></i>
+          </div>
+
+          <input class="edit-submit disabled" type="button" id="saveBtn" value="guardar" onclick="editTask(event)">
+          <a href="home.html" class="edit-cancelar" type="button" id="cancelBtn">retroceder</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer-comum">
+    <p class="footer-p">&copy; AoR 2023</p>
+  </footer>
+
+  <script src="details.js"></script>
+  <script src="commonMethods.js"></script>
+</body>
+</html>

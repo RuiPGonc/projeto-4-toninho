@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to-do-edit-profile-page</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body id="editProfile">
+  <header>
+    <nav class="topnav">
+        <a href="index.html"><i class="fa fa-solid fa-power-off" onclick="logout()"></i></a>
+        <a href="home.html"><i class="fa fa-solid fa-home"></i></a>
+        <h4 id="utilizadorAtivo"></h4>
+        <button class="openSidebar" onclick="openNav()"><i class="fa-solid fa-bars"></i></button>
+        <a href="#" id="profile-picture-box" class="profile-picture-box"></a>
+        <h5 id="pageName">EDITAR PERFIL</h5>   
+    </nav>
+</header>
+
+<aside id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="edit-profile.html" class="empty-link">editar perfil pessoal</a>
+    <a href="#" class="empty-link">   </a>
+    <a href="#" class="empty-link">   </a>
+    <a href="users-list.html">lista de utilizadores</a>
+    <a href="#">feature b</a>
+    <a href="#">feature c</a>
+</aside>
+
+<!-- -++++++++++++++++++++++-->
+<main>
+  <div class="editProfileContainer">
+    <div class="editProfileTitle">ALTERAÇÃO DE REGISTO</div>
+    <div class="content">
+      <form action="formEditProfile">
+        <div class="editProfileUserDetails">
+          <div class="editProfileInputBox">
+            <label class="first-name">nome</label>
+            <input type="text"  id="firstNameInput" placeholder="" >
+          </div>
+          <div class="editProfileInputBox">
+            <label class="last-name">apelido</label>
+            <input type="text"  id="lastNameInput" placeholder="" >
+          </div>
+          <div class="editProfileInputBox" >
+            <label class="user-name" >username</label>
+            <input type="text" id="usernameInput" placeholder="" disabled>
+          </div>
+          <div class="editProfileInputBox">
+            <label class="email">email</label>
+            <input type="email" id="emailInput" placeholder="" >
+          </div>
+          <div class="editProfileInputBox">
+            <label class="phone">telefone</label>
+            <input type="text"  id="phoneInput" placeholder="" >
+          </div>
+          <div class="editProfileInputBox">
+            <label class="photo">fotografia (url)</label>
+            <input type="text"  id="photoInput" placeholder="" >
+          </div>
+          <div class="editProfileInputBox">
+            <label class="password">nova password</label>
+            <input type="password"  id="newPasswordInput" placeholder="" >
+          </div>
+          <div class="editProfileInputBox">
+            <label class="password">confirmar password</label>
+            <input type="password"id="confirmNewPasswordInput"  placeholder="" >
+          </div>
+        </div>
+        <div class="button">
+          <input type="button" onclick= "goEditProfile(event)" value="alterar registo">
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+<!-- -++++++++++++++++++++++-->
+   <footer class="footer-comum">
+        <p class="footer-p">&copy; AoR 2023</p>
+    </footer>
+<script src="edit-profile.js" defer></script>
+<script src="commonMethods.js"></script>
+
+</body>
+</html>

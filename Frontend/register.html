@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to-do-register-page</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body id="register">
+  <header>
+    <nav class="topnav">
+        <a href="index.html"><i class="fa-solid fa-angle-left"></i></a>
+        <h5 id="registerPageName">REGISTO DE NOVO UTILIZADOR</h5>   
+    </nav>
+  </header>
+
+<!--++++++++++++++++++++++-->
+<main>
+  <div class="registerContainer">
+    <div class="registerTitle">NOVO REGISTO</div>
+    <div class="content">
+      <form action="#">
+        <div class="registerUserDetails">
+          <div class="registerInputBox">
+            <label class="first-name">nome</label>
+            <input type="text" id="firstName" placeholder="" required>
+          </div>
+          <div class="registerInputBox">
+            <label class="last-name">apelido</label>
+            <input type="text" id="lastName" placeholder="" required>
+          </div>
+          <div class="registerInputBox">
+            <label class="username">username</label>
+            <input type="text" id="username" placeholder="" required>
+          </div>
+          <div class="registerInputBox">
+            <label class="email">email</label>
+            <input type="email" id="email" placeholder="" required>
+          </div>
+          <div class="registerInputBox">
+            <label class="phone">telefone</label>
+            <input type="text" id="phone" placeholder="" required>
+          </div>
+          <div class="registerInputBox">
+            <label class="photo">fotografia (url)</label>
+            <input type="text" id="photo" placeholder="" required>
+          </div>
+          <div class="registerInputBox">
+            <label class="password">password</label>
+            <input type="password" id="password1" placeholder="" required>
+          </div>
+          <div class="registerInputBox">
+            <label class="password">confirmar password</label>
+            <input type="password" id="password2" placeholder="" required>
+          </div>
+        </div>
+        <div class="button">
+          <div class="button">
+            <input type="button" id="registerButton" value="criar novo registo" onclick="addUser(event)">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+<!-- -++++++++++++++++++++++-->
+   <footer class="footer-comum">
+        <p class="footer-p">&copy; AoR 2023</p>
+    </footer>
+<script src="register.js" defer></script>
+
+
+</body>
+</html>
