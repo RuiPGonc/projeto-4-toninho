@@ -69,7 +69,7 @@ public class UserDao extends AbstractDao<User> {
 		return ent;
 	}
 
-	public void persistToken(String token, String username) {
+	/*public void persistToken(String token, String username) {
 		User ent = null;
 		try {
 
@@ -82,7 +82,7 @@ public class UserDao extends AbstractDao<User> {
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 
 	public void persistNewUser(User user) {
 		try {

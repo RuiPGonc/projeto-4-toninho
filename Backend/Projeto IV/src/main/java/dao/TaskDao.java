@@ -22,7 +22,6 @@ public class TaskDao extends AbstractDao<Task> {
 	public Task findTaskById(long id) {
 		Task ent = null;
 
-		System.out.println("Aqui!! findTaskById check");
 		try {
 
 			ent = (Task) em.createNamedQuery("Task.findTaskById", Task.class).setParameter("id", id).getSingleResult();
@@ -38,7 +37,33 @@ public class TaskDao extends AbstractDao<Task> {
 		return ent;
 	}
 
-	public ArrayList<Task> findTaskBytoken(String token) {
+	public ArrayList<Task> findTaskByUserId(long userId) {
+
+		ArrayList<Task> list = new ArrayList<Task>();
+
+		// Query for a List of objects.
+		try {
+			
+			
+			Query query = (Query) em.createQuery("SELECT t FROM Task t").getResultList();
+
+			list = (ArrayList<Task>) query;
+
+			ArrayList<Task> userList = new ArrayList<Task>();
+
+			for (Task element : list) {
+				if (element.getOwnerTask().getOwnerUser().getUserId()==userId) {
+					userList.add(element);
+				}
+			}
+			return userList;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	/*public ArrayList<Task> findTaskBytoken(String token) {
 
 		ArrayList<Task> list = new ArrayList<Task>();
 
@@ -64,7 +89,7 @@ public class TaskDao extends AbstractDao<Task> {
 			return null;
 		}
 	}
-	
+	*/
 
 	public void persistNewTask(Task task) {
 		try {

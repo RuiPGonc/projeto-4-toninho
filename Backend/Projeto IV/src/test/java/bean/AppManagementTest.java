@@ -13,10 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dao.CategoryDao;
+import dao.SessionDao;
 import dao.TaskDao;
 import dao.UserDao;
 import dto.TaskDto;
 import entity.Category;
+import entity.SessionLogin;
 import entity.Task;
 import entity.User;
 
@@ -36,15 +38,19 @@ class AppManagementTest {
 	
 	TaskDto taskDto;
 	
+	SessionDao sessionDao;
+	SessionLogin sessionLogin;
+	
 	AppManagement appBean= new AppManagement();
 	
 	
 	@BeforeEach
 	void setUp() {
 		
-		user = new User("johndoe", 2L, "7C6A180B36896A0A8C02787EEAFB0E4C", "John", "Doe", "johndoe@mail.com",
+		user = new User("johndoe", 2L, "John", "Doe", "johndoe@mail.com",
 				"+3519100000", "http//localhost:8080/photo", "yes");
 		
+		sessionLogin=new SessionLogin(user);
 		category = new Category("Unit test", user);
 		
 		task = new Task("Unit test", "Create unit tests", "25/03/2023 15:30", category, 999L, "03/03/2023 15:30", false,
@@ -54,6 +60,8 @@ class AppManagementTest {
 		taskDto = new TaskDto("Unit test", "Create unit tests", "25/03/2023 15:30", 1, 999L, "03/03/2023 15:30", false,
 				123L);
 		
+		sessionDao=mock(SessionDao.class);
+		appBean.setSessionDao(sessionDao);
 		
 		userDao=mock(UserDao.class);
 		appBean.setUserDao(userDao);
@@ -75,47 +83,47 @@ class AppManagementTest {
 	@Test
 	void when_logout() {
 		
-		when(userDao.findUserByToken(user.getToken())).thenReturn(user);
+		when(sessionDao.findSessionByToken(sessionLogin.getToken())).thenReturn(sessionLogin);
 		doNothing().when(userDao).merge(user);
 		
-		assertTrue(appBean.logout(user.getToken()));
+		assertTrue(appBean.logout(sessionLogin.getToken()));
 	}
 	
 	@Test
 	void when_logout_and_user_is_null() {
 		
-		when(userDao.findUserByToken(user.getToken())).thenReturn(null);
+		when(sessionDao.findSessionByToken(sessionLogin.getToken())).thenReturn(null);
 		//doNothing().when(userDao).merge(user);
 		
-		assertFalse(appBean.logout(user.getToken()));
+		assertFalse(appBean.logout(sessionLogin.getToken()));
 	}
 	
 	@Test
 	void check_session_time_ok () {
 		
-		when(userDao.findUserByToken(user.getToken())).thenReturn(user);
-		assertFalse(appBean.checkSessionTime(user.getToken()));
+		when(sessionDao.findSessionByToken(sessionLogin.getToken())).thenReturn(sessionLogin);
+		assertTrue(appBean.checkSessionTime(sessionLogin.getToken()));
 	}
 	
 	@Test
 	void check_session_time_when_user_null () {
 		
-		when(userDao.findUserByToken(user.getToken())).thenReturn(null);
-		assertFalse(appBean.checkSessionTime(user.getToken()));
+		when(sessionDao.findSessionByToken(sessionLogin.getToken())).thenReturn(null);
+		assertFalse(appBean.checkSessionTime(sessionLogin.getToken()));
 	}
 	
 	@Test
 	void authenticateUser_OK () {
 		
-		when(userDao.findUserByToken("gsdfsdf")).thenReturn(user);
-		String response=appBean.authenticateUser("gsdfsdf");
+		when(sessionDao.findSessionByToken("same_Token")).thenReturn(sessionLogin);
+		String response=appBean.authenticateUser("same_Token");
 		assertEquals("200", response);
 	}
 	
 	@Test
 	void authenticateUser_when_user_one_token_different_from_another () {
 		
-		when(userDao.findUserByToken("gsdfsdf")).thenReturn(user);
+		when(sessionDao.findSessionByToken("gsdfsdf")).thenReturn(sessionLogin);
 		String response=appBean.authenticateUser("dfgdfgsfd");
 		assertEquals("403", response);
 	}
@@ -123,7 +131,7 @@ class AppManagementTest {
 	@Test
 	void authenticateUser_when_user_is_null () {
 		
-		when(userDao.findUserByToken("gsdfsdf")).thenReturn(null);
+		when(sessionDao.findSessionByToken("gsdfsdf")).thenReturn(null);
 		String response=appBean.authenticateUser("gsdfsdf");
 		assertEquals("403", response);
 	}
@@ -149,7 +157,7 @@ class AppManagementTest {
 	
 	
 	
-	
+
 	
 
 }

@@ -10,6 +10,7 @@ import java.util.concurrent.SubmissionPublisher;
 import com.mysql.cj.x.protobuf.MysqlxPrepare.Deallocate;
 
 import dao.CategoryDao;
+import dao.SessionDao;
 import dao.TaskDao;
 import dao.UserDao;
 import dto.TaskDto;
@@ -36,6 +37,8 @@ public class TaskBean implements Serializable {
 
 	@EJB
 	CategoryDao categoryDao;
+	@EJB
+	SessionDao sessionDao;
 
 	// ESPECIFICAÇÃO U5 - adicionar nova tarefa
 	public Task createTask(TaskDto newTask, User u) {
@@ -95,7 +98,7 @@ public class TaskBean implements Serializable {
 
 		if (u.getUserId() == logedUser.getUserId()) {
 
-			appBean.updateSessionTime(logedUser); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			if (u.getState().equals("inativa")) {
 				return false;
@@ -123,7 +126,7 @@ public class TaskBean implements Serializable {
 			if (u.getState().equals("inativa")) {
 				return false;
 			}
-			appBean.updateSessionTime(logedUser); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			t.setDelete(false);
 
@@ -143,7 +146,7 @@ public class TaskBean implements Serializable {
 
 			if (taskList != null) {
 
-				appBean.updateSessionTime(logUser); // atualiza o session time
+				appBean.updateSessionTime(token); // atualiza o session time
 
 				ArrayList<Task> deletedList = new ArrayList<Task>();
 				for (Task t : taskList) {
@@ -170,7 +173,7 @@ public class TaskBean implements Serializable {
 			if (userId == 0) {
 				userId = uLoged.getUserId();
 			}
-			appBean.updateSessionTime(uLoged); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			List<Task> userList = getUserTasks(userId);
 			// taskDao.findAll();
@@ -228,7 +231,7 @@ public class TaskBean implements Serializable {
 				return false;
 			}
 
-			appBean.updateSessionTime(logedUser); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			t.setTitle(task.getTitle());
 			t.setDetails(task.getDetails());
@@ -304,7 +307,7 @@ public class TaskBean implements Serializable {
 
 			if (taskEntity != null) {
 
-				appBean.updateSessionTime(logedUser); // atualiza o session time
+				appBean.updateSessionTime(token); // atualiza o session time
 
 				// PRINT_TASK(taskEntity);
 				taskDao.persistNewTask(taskEntity);
@@ -353,6 +356,11 @@ public class TaskBean implements Serializable {
 
 	public void setAppBean(AppManagement appBean) {
 		this.appBean = appBean;
+	}
+
+	public void setSessionDao(SessionDao sessionDao) {
+		this.sessionDao=sessionDao;
+		
 	}
 
 }

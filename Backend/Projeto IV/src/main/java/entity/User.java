@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="User")
 @NamedQuery(name = "User.findUsersByRole", query = "SELECT u FROM User u WHERE u.admin = :role")
-@NamedQuery(name = "User.findUserByToken", query = "SELECT DISTINCT u FROM User u WHERE u.token = :token")
+//@NamedQuery(name = "User.findUserByToken", query = "SELECT DISTINCT u FROM User u WHERE u.token = :token")
 @NamedQuery(name = "User.findUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
 @NamedQuery(name = "User.findUserById", query = "SELECT u FROM User u WHERE u.userId = :userId")
 public class User implements Serializable{
@@ -47,9 +47,6 @@ public class User implements Serializable{
 	
 	@Column(name="photoUrl", nullable=false, unique = false, updatable = true)
 	private String photoUrl;
-	
-	@Column(name="token", nullable=true, unique = true, updatable = true)
-	private String token=null;
 
 	@Column(name="credencias admin",nullable=false, unique = false, updatable = true )
 	private String admin="no";
@@ -59,9 +56,15 @@ public class User implements Serializable{
 	
 	@OneToMany(mappedBy = "ownerUser", fetch = FetchType.EAGER)
 	private List<Category> userListCategory=new ArrayList<Category>();
-	//private List <Task> userTaskList=new ArrayList<>();
+	
+	@OneToMany(mappedBy = "sessionOwner", fetch = FetchType.EAGER)
+	private List<SessionLogin> sessionsList=new ArrayList<SessionLogin>();
+	
+	
+	//@Column(name="token", nullable=true, unique = true, updatable = true)
+	//private String token=null;
 
-	private long timeSessionLoged; 
+	//private long timeSessionLoged; 
 	
 	
 	public User() {}
@@ -120,7 +123,7 @@ public class User implements Serializable{
 		this.state = state;
 	}
 
-	public String getToken() {
+	/*public String getToken() {
 		return token;
 	}
 
@@ -134,7 +137,7 @@ public class User implements Serializable{
 	public void setToken(String token) {
 		this.token=token;
 	}
-
+*/
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
@@ -195,7 +198,7 @@ public class User implements Serializable{
 		this.photoUrl = photoUrl;
 	}
 	
-	public long createTimeSession() {
+	/*public long createTimeSession() {
 		final int timeOutSession = 300000; // 5min em miliseg.
 		long timeSession = Calendar.getInstance().getTimeInMillis() + timeOutSession;
 		
@@ -209,7 +212,7 @@ public class User implements Serializable{
 	public void setTimeSessionLoged(long timeSessionLoged) {
 		this.timeSessionLoged = timeSessionLoged;
 	}
-	
+	*/
 	
 	
 

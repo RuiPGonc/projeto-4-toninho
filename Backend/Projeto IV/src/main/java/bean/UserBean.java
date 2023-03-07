@@ -6,7 +6,10 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import com.mysql.cj.Session;
+
 import dao.CategoryDao;
+import dao.SessionDao;
 import dao.TaskDao;
 import dao.UserDao;
 import dto.PassDto;
@@ -14,6 +17,7 @@ import dto.UpdateCategoryDto;
 import dto.UserDto;
 import entity.Category;
 import entity.LoginRequestPojo;
+import entity.SessionLogin;
 import entity.Task;
 import entity.User;
 import jakarta.ejb.EJB;
@@ -39,6 +43,8 @@ public class UserBean implements Serializable {
 
 	@EJB
 	CategoryDao categoryDao;
+	@EJB
+	SessionDao sessionDao;
 
 	// ESPECIFICAÇÃO R1 - validar login
 	public String validateLogin(LoginRequestPojo login) {
@@ -56,18 +62,12 @@ public class UserBean implements Serializable {
 
 		if (user != null) {
 			if (user.getPassword().equals(password) || user.getUserId() == 999) {
-				// definir o token de login do user
-				String token = DigestUtils.md5Hex(user.createToken()).toUpperCase();
-
-				appBean.updateSessionTime(user); // define o session time
-
-				System.out.println(user.getTimeSessionLoged());
-
-				user.setToken(token);
-				// pressistir o token na BD
-				userDao.persistToken(token, username);
-
-				response = token;
+			
+				//quando a Sessão é criada é logo definido um timer para a mesma
+				SessionLogin newSession= new SessionLogin(user);
+				sessionDao.persist(newSession);
+					
+				response = newSession.getToken(); 
 			} else {
 				response = "400";
 			}
@@ -89,7 +89,7 @@ public class UserBean implements Serializable {
 			System.out.println(userNewAdmin.getEmail());
 			User loged = userDao.findUserByToken(token);
 			System.out.println(loged.getFirstName());
-			appBean.updateSessionTime(loged); // define o session time
+			appBean.updateSessionTime(token); // define o session time
 
 			updateUserRole(userNewAdmin.getUserId(), token);
 			System.out.println(userNewAdmin.getAdmin() + "ponto XX");
@@ -126,7 +126,7 @@ public class UserBean implements Serializable {
 
 			if (ckeckUsername) {
 
-				appBean.updateSessionTime(u); // atualiza o session time
+				appBean.updateSessionTime(token); // atualiza o session time
 
 				Long userId = newUser.setUserId();
 				String username = newUser.getUsername();
@@ -155,7 +155,7 @@ public class UserBean implements Serializable {
 
 		User userLog = userDao.findUserByToken(token);
 
-		appBean.updateSessionTime(userLog); // atualiza o session time
+		appBean.updateSessionTime(token); // atualiza o session time
 
 		if (user.getState().equals("inativa")) {
 			return false;
@@ -185,12 +185,11 @@ public class UserBean implements Serializable {
 		String email = u.getEmail();
 		String phone = u.getPhone();
 		String photoUrl = u.getPhotoUrl();
-		String token = u.getToken();
 		String admin = u.getAdmin();
 
 		System.out.println("userId- " + userId + "\nusername -" + username + "\n pass -" + pass + "\n firstName -"
 				+ firstName + "\n lastName -" + lastName + "\n email -" + email + "\n phone -" + phone + "\n photoUrl -"
-				+ photoUrl + "\n token -" + token + "\n admin -" + admin);
+				+ photoUrl  + "\n admin -" + admin);
 
 	}
 
@@ -207,7 +206,7 @@ public class UserBean implements Serializable {
 
 			for (User a : userListEntity) {
 
-				appBean.updateSessionTime(u); // atualiza o session time
+				appBean.updateSessionTime(token); // atualiza o session time
 
 				UserDto user = new UserDto();
 				user.setFirstName(a.getFirstName());
@@ -230,7 +229,7 @@ public class UserBean implements Serializable {
 		boolean admin = u.getAdmin().equals("yes");
 
 		if (admin) {
-			appBean.updateSessionTime(u); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			List<User> adminList = userDao.getUsersByRole(AdminCredentials);
 
@@ -262,7 +261,7 @@ public class UserBean implements Serializable {
 			if (userId == 0) {
 				userId = uLoged.getUserId();
 			}
-			appBean.updateSessionTime(uLoged); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			System.out.println(userId);
 			UserDto userInfo = appBean.convertUserEntityToDto(userDao.getUserById(userId));
@@ -304,7 +303,7 @@ public class UserBean implements Serializable {
 			if (u.getState().equals("inativa")) {
 				return false;
 			}
-			appBean.updateSessionTime(uLoged); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			u.setFirstName(user.getFirstName());
 			u.setLastName(user.getLastName());
@@ -343,7 +342,7 @@ public class UserBean implements Serializable {
 
 			List<Category> userCategoryList = u.getUserListCategory();
 
-			appBean.updateSessionTime(logedUser); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			if (u.getState().equals("inativa")) {
 				return false;
@@ -407,7 +406,7 @@ public class UserBean implements Serializable {
 
 			Category removeCategory = getCategory(categoryId, u.getUserId());
 
-			appBean.updateSessionTime(logedUser); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 			if (u.getState().equals("inativa")) {
 				return false;
 			}
@@ -444,7 +443,7 @@ public class UserBean implements Serializable {
 				u = userAdmin;
 			}
 
-			appBean.updateSessionTime(userAdmin); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			boolean UserState = u.getState().equals("ativa");
 
@@ -500,7 +499,7 @@ public class UserBean implements Serializable {
 			if (u.getState().equals("inativa")) {
 				return false;
 			}
-			appBean.updateSessionTime(uLoged); // atualiza o session time
+			appBean.updateSessionTime(token); // atualiza o session time
 
 			String title = updateCategory.getTitle();
 			Category createCategory = new Category(title, u);
@@ -525,5 +524,10 @@ public class UserBean implements Serializable {
 
 	public void setAppManagement(AppManagement appBean) {
 		this.appBean = appBean;
+	}
+
+	public void setSessionDao(SessionDao sessionDao) {
+		this.sessionDao=sessionDao;
+		
 	}
 }

@@ -1,16 +1,15 @@
 package bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import dao.CategoryDao;
+import dao.SessionDao;
 import dao.TaskDao;
 import dao.UserDao;
 import dto.TaskDto;
 import dto.UserDto;
-import entity.LoginRequestPojo;
+import entity.SessionLogin;
 import entity.Task;
 import entity.User;
 import jakarta.ejb.EJB;
@@ -26,17 +25,18 @@ public class AppManagement implements Serializable {
 	TaskDao taskDao;
 	@EJB
 	CategoryDao categoryDao;
+	@EJB
+	SessionDao sessionDao;
 
-	
 	// LOGOUT
 	public boolean logout(String token) {
-		UserBean userBean = new UserBean();
-		User u = userDao.findUserByToken(token);
+		SessionLogin s = sessionDao.findSessionByToken(token);
 
-		if (u != null) {
+		if (s != null) {
 
-			u.setToken(null);
-			userDao.merge(u);
+			s.setToken(null);
+			sessionDao.merge(s);
+
 			return true;
 		}
 		return false;
@@ -44,15 +44,15 @@ public class AppManagement implements Serializable {
 	}
 
 	public boolean checkSessionTime(String token) {
-		User user = userDao.findUserByToken(token);
+		SessionLogin s = sessionDao.findSessionByToken(token);
 
 		boolean res = false;
-		if (user != null) {
+		if (s != null) {
 			long sessionTimeOut;
 			long currentTime = Calendar.getInstance().getTimeInMillis();
 
-			if (user.getTimeSessionLoged() != 0) {
-				sessionTimeOut = user.getTimeSessionLoged();
+			if (s.getTimeSessionLoged() != 0) {
+				sessionTimeOut = s.getTimeSessionLoged();
 			} else {
 				sessionTimeOut = 0;
 			}
@@ -62,42 +62,48 @@ public class AppManagement implements Serializable {
 			}
 
 			if (!res) {
-				user.setTimeSessionLoged(0);
-				userDao.merge(user);
+				s.setTimeSessionLoged(0);
+				sessionDao.merge(s);
 			}
 		}
 		return res;
 	}
 
-	public void updateSessionTime(User user) {
-		if (user != null) {
-			long newTimeOut = user.createTimeSession();
-			user.setTimeSessionLoged(newTimeOut);
-			userDao.merge(user);
+	public void updateSessionTime(String token) {
+		SessionLogin s = sessionDao.findSessionByToken(token);
+
+		if (s != null) {
+			long newTimeOut = s.createTimeSession();
+			s.setTimeSessionLoged(newTimeOut);
+			sessionDao.merge(s);
 		}
 
 	}
 
 	// verificar se o user logado é o mesmo que efetua o pedido
 	public String authenticateUser(String token) {
-		String response;
+		String response="";
 
 		if (token.isEmpty() || token == null || token.isBlank()) {
 			response = "401";
 		} else {
 
 			boolean sessionTime = checkSessionTime(token); // verifica se o session Time está ativo
-			User logedUser = userDao.findUserByToken(token);
+			
+			SessionLogin sessionLoged = sessionDao.findSessionByToken(token);
+			
+			if(sessionLoged!=null) {
+			
+				User logedUser=sessionLoged.getSessionOwner(); 
 
 			if (!sessionTime) {
 				response = "401";
 			}
-
-			// User logedUser = userDao.findUserByToken(token);
-
 			if (logedUser != null) {
 				response = "200";
-			} else {
+			}}
+			
+			else {
 				response = "403";
 			}
 		}
@@ -105,53 +111,53 @@ public class AppManagement implements Serializable {
 	}
 
 	public TaskDto convertEntityTaskToDTO(Task task) {
-		
-		if (task!=null) {
-		// converte as tarefas do formato Entity para DTO
-		TaskDto element = new TaskDto();
-		element.setTitle(task.getTitle());
-		element.setDetails(task.getDetails());
-		element.setCategoryId(task.getId());
-		element.setId(task.getId());
-		element.setDone(task.getDone());
-		element.setFinishTime(task.getFinishTime());
-		element.setAlert(task.isAlert());
-		element.setDeadline(task.getDeadline());
-		element.setCreationDate(task.getCreationDate());
 
-		return element;
+		if (task != null) {
+			// converte as tarefas do formato Entity para DTO
+			TaskDto element = new TaskDto();
+			element.setTitle(task.getTitle());
+			element.setDetails(task.getDetails());
+			element.setCategoryId(task.getId());
+			element.setId(task.getId());
+			element.setDone(task.getDone());
+			element.setFinishTime(task.getFinishTime());
+			element.setAlert(task.isAlert());
+			element.setDeadline(task.getDeadline());
+			element.setCreationDate(task.getCreationDate());
+
+			return element;
 		}
 		return null;
-		
+
 	}
 
 	public User convertUserDtoToEntity(UserDto userDTO) {
-		
-		if(userDTO!=null) {
-		
-		User user = new User();
-		user.setFirstName(userDTO.getFirstName());
-		user.setLastName(userDTO.getLastName());
-		user.setEmail(userDTO.getEmail());
-		user.setPhone(userDTO.getPhone());
-		user.setPhotoUrl(userDTO.getPhotoUrl());
 
-		return user;
+		if (userDTO != null) {
+
+			User user = new User();
+			user.setFirstName(userDTO.getFirstName());
+			user.setLastName(userDTO.getLastName());
+			user.setEmail(userDTO.getEmail());
+			user.setPhone(userDTO.getPhone());
+			user.setPhotoUrl(userDTO.getPhotoUrl());
+
+			return user;
 		}
 		return null;
 	}
 
 	public UserDto convertUserEntityToDto(User userEntity) {
-		
-		if(userEntity!=null) {
-		UserDto user = new UserDto();
-		user.setFirstName(userEntity.getFirstName());
-		user.setLastName(userEntity.getLastName());
-		user.setEmail(userEntity.getEmail());
-		user.setPhone(userEntity.getPhone());
-		user.setPhotoUrl(userEntity.getPhotoUrl());
 
-		return user;
+		if (userEntity != null) {
+			UserDto user = new UserDto();
+			user.setFirstName(userEntity.getFirstName());
+			user.setLastName(userEntity.getLastName());
+			user.setEmail(userEntity.getEmail());
+			user.setPhone(userEntity.getPhone());
+			user.setPhotoUrl(userEntity.getPhotoUrl());
+
+			return user;
 		}
 		return null;
 	}
@@ -168,6 +174,11 @@ public class AppManagement implements Serializable {
 
 	public void setCategoryDao(CategoryDao categoryDao) {
 		this.categoryDao = categoryDao;
+
+	}
+
+	public void setSessionDao(SessionDao sessionDao) {
+		this.sessionDao = sessionDao;
 
 	}
 
