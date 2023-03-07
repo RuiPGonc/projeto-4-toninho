@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>aor.paj</groupId>
-	<artifactId>Projeto-III-Helder-e-Rui</artifactId>
+	<artifactId>Projeto-iv</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 
-	<name>Projeto III - Helder e Rui</name>
+	<name>Projeto-iv</name>
 	<url>http://www.example.com</url>
 
 	<properties>
