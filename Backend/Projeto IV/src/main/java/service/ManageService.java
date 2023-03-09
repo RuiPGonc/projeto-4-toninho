@@ -26,15 +26,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-
 /*Query para criar um novo Admin:
  
   INSERT INTO user (`userId`, `credencias admin`, `email`, `first Name`, `last Name`, `password`, `phone`, `photoUrl`, `estado da Conta`, `token`, `username`,`timeSessionLoged`) 
 VALUES ('999', 'yes', 'a@s.pt', 'drHelder', 'Antunes', '1232', '234324', 'aaaa', 'ativa', '0', 'admin','0');
   
   */
-
-
 
 @Path("/ToDo_app")
 public class ManageService {
@@ -64,7 +61,7 @@ public class ManageService {
 	public Response login(LoginRequestPojo login) {
 
 		String loginResponse = userBean.validateLogin(login);
-System.out.println("aqui");
+		System.out.println("aqui");
 		switch (loginResponse) {
 		case "400":
 			return Response.status(400).entity(failed).build();
@@ -154,7 +151,8 @@ System.out.println("aqui");
 	@Path("/users/categoryUpdate/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setCategory(@HeaderParam("token") String token, @PathParam("id") long id, UpdateCategoryDto updateCategory) {
+	public Response setCategory(@HeaderParam("token") String token, @PathParam("id") long id,
+			UpdateCategoryDto updateCategory) {
 
 		String validLogin = appManage.authenticateUser(token);
 
@@ -165,12 +163,12 @@ System.out.println("aqui");
 			return Response.status(403).entity(forbiden).build();
 		default:
 
-			Boolean setCategory = userBean.updateCategory(id,token, updateCategory);
+			Boolean setCategory = userBean.updateCategory(id, token, updateCategory);
 
 			if (!setCategory) {
 				return Response.status(400).entity(failed).build();
 			} else {
-				return Response.status(200).entity(success + "   " + token ).build();
+				return Response.status(200).entity(success + "   " + token).build();
 			}
 		}
 	}
@@ -218,7 +216,7 @@ System.out.println("aqui");
 			boolean added = taskBean.addTask(a, token);
 
 			if (added) {
-				return Response.status(200).entity(success + "   " + token ).build();
+				return Response.status(200).entity(success + "   " + token).build();
 			} else {
 				return Response.status(400).entity(failed).build();
 			}
@@ -229,8 +227,7 @@ System.out.println("aqui");
 	@PUT
 	@Path("/users/activities/{taskId}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateTask(TaskDto t, @PathParam("taskId") long taskId,
-			@HeaderParam("token") String token) {
+	public Response updateTask(TaskDto t, @PathParam("taskId") long taskId, @HeaderParam("token") String token) {
 
 		String authenticateUser = appManage.authenticateUser(token);
 
@@ -255,12 +252,11 @@ System.out.println("aqui");
 	@DELETE
 	@Path("/users/task/{taskId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response removeTask(@PathParam("taskId") long taskId,
-			@HeaderParam("token") String token) {
+	public Response removeTask(@PathParam("taskId") long taskId, @HeaderParam("token") String token) {
 
 		String authenticateUser = appManage.authenticateUser(token);
 
-		switch (authenticateUser){
+		switch (authenticateUser) {
 		case "401":
 			return Response.status(401).entity(unauthorized).build();
 		case "403":
@@ -281,8 +277,7 @@ System.out.println("aqui");
 	@PUT
 	@Path("/users/task/{taskId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response abilityTask( @PathParam("taskId") long taskId,
-			@HeaderParam("token") String token) {
+	public Response abilityTask(@PathParam("taskId") long taskId, @HeaderParam("token") String token) {
 
 		String authenticateUser = appManage.authenticateUser(token);
 
@@ -303,7 +298,33 @@ System.out.println("aqui");
 		}
 	}
 
-	// ESPECIFICAÇÃO Obter Lista de tarefas eliminadas- solicitação exclusiva do admin
+	// Alterar estado de tarefa
+	@POST
+	@Path("/users/activities/state/{taskId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateTask(@PathParam("taskId") long taskId, @HeaderParam("token") String token) {
+
+		String authenticateUser = appManage.authenticateUser(token);
+
+		switch (authenticateUser) {
+		case "401":
+			return Response.status(401).entity(unauthorized).build();
+		case "403":
+			return Response.status(403).entity(forbiden).build();
+		default:
+
+			boolean updated = taskBean.updateTaskStatus(taskId,token);
+			
+			if (updated) {
+				return Response.status(200).entity(success + "   " + token).build();
+			} else {
+				return Response.status(400).entity(failed).build();
+			}
+		}
+	}
+
+	// ESPECIFICAÇÃO Obter Lista de tarefas eliminadas- solicitação exclusiva do
+	// admin
 	@GET
 	@Path("/users/deletedTasks")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -318,10 +339,8 @@ System.out.println("aqui");
 			return Response.status(403).entity(forbiden).build();
 		default:
 
+			ArrayList<HashMap<String, String>> deletedList = taskBean.getDeletedTasks(token);
 
-			ArrayList<HashMap<String, String>>  deletedList = taskBean.getDeletedTasks(token);
-
-			
 			if (deletedList == null) {
 				return Response.status(400).entity(failed).build();
 			} else {
@@ -334,7 +353,7 @@ System.out.println("aqui");
 	@POST
 	@Path("/users/newUser")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addUser(UserDto u, @HeaderParam("token")String token,@HeaderParam("password") String password) {
+	public Response addUser(UserDto u, @HeaderParam("token") String token, @HeaderParam("password") String password) {
 
 		String validLogin = appManage.authenticateUser(token);
 
@@ -348,7 +367,7 @@ System.out.println("aqui");
 			// não dá para introduzir mais que um user! definições de criar e atuaizar
 			// tabelas??
 
-			Boolean response = userBean.addUser(u, password,token);
+			Boolean response = userBean.addUser(u, password, token);
 
 			if (response) {
 				return Response.status(200).entity(success).build();
@@ -403,7 +422,7 @@ System.out.println("aqui");
 
 			if (removeUser == null) {
 				return Response.status(400).entity(failed).build();
-			}else {
+			} else {
 				return Response.status(200).entity(success + " - Conta inativada!").build();
 
 			}
@@ -450,7 +469,7 @@ System.out.println("aqui");
 			return Response.status(403).entity(forbiden).build();
 		default:
 
-			ArrayList<HashMap<String, String>>  tasks = taskBean.getTaskList(token, userId);
+			ArrayList<HashMap<String, String>> tasks = taskBean.getTaskList(token, userId);
 
 			if (tasks != null) {
 				return Response.status(200).entity(tasks).build();
@@ -464,8 +483,7 @@ System.out.println("aqui");
 	@PUT
 	@Path("/users/userRole/{userId}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateAdminUserRole(@HeaderParam("token") String token,
-			@PathParam("userId") long userId) {
+	public Response updateAdminUserRole(@HeaderParam("token") String token, @PathParam("userId") long userId) {
 
 		String authenticateUser = appManage.authenticateUser(token);
 
@@ -487,30 +505,28 @@ System.out.println("aqui");
 
 	}
 
-	
-	
 	// ESPECIFICAÇÃO A8 - adiciona novo administrador
-		@POST
-		@Path("/users/newAdmin")
-		@Consumes(MediaType.APPLICATION_JSON)
-		public Response addAdmin(UserDto u, @HeaderParam("token") String token, @HeaderParam("password") String password) {
+	@POST
+	@Path("/users/newAdmin")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addAdmin(UserDto u, @HeaderParam("token") String token, @HeaderParam("password") String password) {
 
-			String authenticateAdmin = appManage.authenticateUser(token);
+		String authenticateAdmin = appManage.authenticateUser(token);
 
-			switch (authenticateAdmin) {
-			case "401":
-				return Response.status(401).entity(unauthorized).build();
-			default:
+		switch (authenticateAdmin) {
+		case "401":
+			return Response.status(401).entity(unauthorized).build();
+		default:
 
-				Boolean response = userBean.addAdmin(u, token,password);
+			Boolean response = userBean.addAdmin(u, token, password);
 
-				if (response) {
-					return Response.status(200).entity(success).build();
-				} else {
-					return Response.status(400).entity(failed).build();
-				}
+			if (response) {
+				return Response.status(200).entity(success).build();
+			} else {
+				return Response.status(400).entity(failed).build();
 			}
 		}
+	}
 
 	// ESPECIFICAÇÃO A9 - obter lista de Admins
 	@GET
@@ -536,5 +552,5 @@ System.out.println("aqui");
 			}
 		}
 	}
-	
+
 }

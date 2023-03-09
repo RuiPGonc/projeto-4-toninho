@@ -72,9 +72,13 @@ public class TaskDto {
 		if(alert && timeReminder==0) {
 			this.timeReminder=10080;  //10 080 => minutos = 7 dias * 24h*60min
 		}
-		
-
 	}
+	
+	
+	
+	//Para teste
+	public TaskDto(String title, String details, String deadline, long categoryId, String creationDate,
+			boolean alert, long timeReminder) {	}
 
 	public LocalDateTime convertToLocalDateTime(String creationDate) {
 

@@ -13,6 +13,7 @@ import dao.SessionDao;
 import dao.TaskDao;
 import dao.UserDao;
 import dto.PassDto;
+import dto.TaskDto;
 import dto.UpdateCategoryDto;
 import dto.UserDto;
 import entity.Category;
@@ -46,9 +47,37 @@ public class UserBean implements Serializable {
 	@EJB
 	SessionDao sessionDao;
 
+	
+	public void CRIAR_oBJETOS() {
+		
+		UserDto novoAdmin=new UserDto("admin", "Dr Helder", "Antunes", "a@s.pt", "234324", "aaaa","0000", "yes");
+		
+		//	public UserDto(String username, String firstName, String lastName, String email, String phone, String photoUrl, String token, String admin) {
+		boolean a = addAdmin(novoAdmin,"0000","1232");
+
+		UpdateCategoryDto categoria= new UpdateCategoryDto("Categoria 1");
+		boolean c = createNewCategory(categoria, novoAdmin.getUserId(), "0000");
+		
+		TaskDto task= new TaskDto("Tarefa 1","detalhes da tarefa","30/03/2022 18:30",1,"29/02/2022 18:30",true,0);
+		
+		boolean t = taskBean.addTask(task, "0000");
+
+				
+		
+	}
+	
+	
 	// ESPECIFICAÇÃO R1 - validar login
 	public String validateLogin(LoginRequestPojo login) {
 
+		boolean testing=true;
+		
+		if(testing) {
+			CRIAR_oBJETOS();
+		}
+		
+			
+		
 		String response;
 		String username = login.getUsername();
 		String password = DigestUtils.md5Hex(login.getPassword()).toUpperCase();
@@ -82,9 +111,7 @@ public class UserBean implements Serializable {
 	public boolean addAdmin(UserDto newAdmin, String token, String password) {
 
 		boolean added = addUser(newAdmin, password, token);
-		System.out.println(added + " Ponto 1");
 		if (added) {
-			System.out.println("ponto 2");
 			User userNewAdmin = userDao.findUserByUsername(newAdmin.getUsername());
 			System.out.println(userNewAdmin.getEmail());
 			User loged = userDao.findUserByToken(token);

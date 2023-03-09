@@ -5,13 +5,25 @@ import java.util.List;
 
 import org.hibernate.dialect.function.CastingConcatFunction;
 
+import bean.AppManagement;
+import entity.SessionLogin;
 import entity.User;
+import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.TypedQuery;
+
 
 @Stateless
 public class UserDao extends AbstractDao<User> {
+	
+	@Inject
+	AppManagement appBean;
 
+	@EJB
+	SessionDao sessionDao;
+	
+	
 	private static final long serialVersionUID = 1L;
 
 	public UserDao() {
@@ -19,21 +31,26 @@ public class UserDao extends AbstractDao<User> {
 	}
 
 	public User findUserByToken(String token) {
-		User ent = null;
-
+		User user=null;
 		try {
-
-			ent = (User) em.createNamedQuery("User.findUserByToken")
+		
+			
+			SessionLogin login=sessionDao.findSessionByToken(token);
+				
+			user = login.getSessionOwner();
+			
+			
+		/*	ent = (User) em.createNamedQuery("User.findUserByToken")
 					.setParameter("token", token)
 					.getSingleResult();
-
+*/
 		} catch (Exception e) {
 
 			e.printStackTrace();
 			return null;
 		}
 
-		return ent;
+		return user;
 	}
 
 	public User findUserByEmail(String email) {

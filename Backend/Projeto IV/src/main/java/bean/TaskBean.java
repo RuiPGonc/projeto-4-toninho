@@ -16,6 +16,7 @@ import dao.UserDao;
 import dto.TaskDto;
 import dto.UserDto;
 import entity.Category;
+import entity.SessionLogin;
 import entity.Task;
 import entity.User;
 import jakarta.ejb.EJB;
@@ -197,7 +198,10 @@ public class TaskBean implements Serializable {
 			taskHash.put("Done", task.getDone());
 			taskHash.put("Details", task.getDetails());
 			taskHash.put("Category", task.getCategoryTitle());
-			taskHash.put("title", task.getTitle());
+			taskHash.put("Title", task.getTitle());
+			String taskId=task.getId()+"";
+			taskHash.put("Id", taskId);
+			
 
 			ohMyGod.add(taskHash);
 		}
@@ -320,11 +324,14 @@ public class TaskBean implements Serializable {
 
 
 // altera estado da tarefa
-	public boolean updateTaskStatus(long taskId, long userId) {
+	public boolean updateTaskStatus(long taskId, String token) {
 
 		Task t = taskDao.findTaskById(taskId);
+		SessionLogin session=sessionDao.findSessionByToken(token);
+		User u= session.getSessionOwner();
+		
 		if (t != null) {
-			if (t.getOwnerTask().getOwnerUser().getUserId() == userId) {
+			if (t.getOwnerTask().getOwnerUser().getUserId() == u.getUserId() || u.getAdmin().equals("yes")) {
 				if (t.getDone().equals("no")) {
 					t.setDone("yes");
 					t.createFinishtime();

@@ -1,0 +1,12 @@
+table{
+    overflow-x:auto;
+    margin:auto;
+}
+th,td{
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    width: 200px;
+}
+
+tr:hover{background-color: coral;}

@@ -40,6 +40,7 @@ public class UserDto {
 	
 	
 	
+	
 // GETTERS AND SETTERS	
 	@XmlElement
 	public String getUsername() {

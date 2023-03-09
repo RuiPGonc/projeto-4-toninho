@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 @Table(name="Session")
 @NamedQuery(name = "SessionLogin.findTokenById", query = "SELECT u FROM SessionLogin u WHERE u.sessionOwner.userId = :userId")
 @NamedQuery(name = "SessionLogin.findSessionByToken", query = "SELECT u FROM SessionLogin u WHERE u.token = :token")
-@NamedQuery(name = "SessionLogin.findSessionByUsername", query = "SELECT u FROM SessionLogin u WHERE u.username = :username")
+//@NamedQuery(name = "SessionLogin.findSessionByUsername", query = "SELECT u FROM SessionLogin u WHERE u.username = :username")
 public class SessionLogin implements Serializable{
 
 	private static final long serialVersionUID = 1L;
