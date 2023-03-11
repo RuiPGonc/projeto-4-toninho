@@ -1,11 +1,13 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../router/index";
+import { performLogin } from "./actions";
 
 function Login() {
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
   const { changeLoginStatus } = useContext(AppContext);
+  const { updateToken } = useContext(AppContext);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -14,12 +16,15 @@ function Login() {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // validation of login
+    const response = await performLogin(inputs.username, inputs.password);
+
     localStorage.setItem("username", inputs.username);
     changeLoginStatus();
+    updateToken(response); //atualizar o token no AppContext
     navigate("/home", { replace: true });
   };
 
@@ -41,7 +46,7 @@ function Login() {
           <label>
             Enter your password:
             <input
-              type="text"
+              type="password"
               name="password"
               defaultValue={inputs.password || ""}
               onChange={handleChange}

@@ -10,8 +10,17 @@ import Profile from "../pages/profile/profile";
 export const AppContext = createContext();
 
 function AppRouter() {
-  const [isLogin, setIsLogin] = useState(false);
+  //const [isLogin, setIsLogin] = useState(false);
+  //const changeLoginStatus = () => setIsLogin(!isLogin);
+
+  const [isLogin, setIsLogin]= useState(false);
   const changeLoginStatus = () => setIsLogin(!isLogin);
+  
+  const[ token,setToken]=useState("");
+  const updateToken = (newToken) => {
+  return setToken(newToken);
+  }
+
 
   return (
     <Router>
@@ -20,7 +29,9 @@ function AppRouter() {
           path="/"
           element={
             <AppContext.Provider
-              value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus }}
+            value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus,
+              token: token,updateToken: updateToken}}
+
             >
               <Login />
             </AppContext.Provider>
@@ -30,7 +41,8 @@ function AppRouter() {
           path="/home"
           element={
             <AppContext.Provider
-              value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus }}
+              value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus,
+                token: token,updateToken: updateToken}}
             >
               <Home />
             </AppContext.Provider>
@@ -40,7 +52,8 @@ function AppRouter() {
           path="/activity"
           element={
             <AppContext.Provider
-              value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus }}
+            value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus,
+              token: token,updateToken: updateToken}}
             >
               <Activity />
             </AppContext.Provider>
@@ -50,7 +63,8 @@ function AppRouter() {
           path="/profile"
           element={
             <AppContext.Provider
-              value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus }}
+            value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus,
+              token: token,updateToken: updateToken}}
             >
               <Profile />
             </AppContext.Provider>
@@ -60,7 +74,8 @@ function AppRouter() {
           path="/login"
           element={
             <AppContext.Provider
-              value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus }}
+            value={{ isLogin: isLogin, changeLoginStatus: changeLoginStatus,
+              token: token,updateToken: updateToken}}
             >
               <Login />
             </AppContext.Provider>

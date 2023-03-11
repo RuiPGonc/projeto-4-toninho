@@ -1,6 +1,7 @@
 package bean;
 
 import java.io.Serializable;
+import java.lang.invoke.StringConcatFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import dao.TaskDao;
 import dao.UserDao;
 import dto.PassDto;
 import dto.TaskDto;
+import dto.TokenDto;
 import dto.UpdateCategoryDto;
 import dto.UserDto;
 import entity.Category;
@@ -85,16 +87,16 @@ categoryDao.persistNewCategory(createCategory);
 	
 	
 	// ESPECIFICAÇÃO R1 - validar login
-	public String validateLogin(LoginRequestPojo login) {
+	public TokenDto validateLogin(String username,String passwordLoged) {
 
 
-		String response;
-		String username = login.getUsername();
-		String password = DigestUtils.md5Hex(login.getPassword()).toUpperCase();
+		TokenDto response = new TokenDto();
+		//String username = login.getUsername();
+		String password = DigestUtils.md5Hex(passwordLoged).toUpperCase();
 
-		if (password.isBlank() || password.isEmpty() || username.isBlank() || username.isEmpty() || login == null) {
-
-			return "401";
+		if (password.isBlank() || password.isEmpty() || username.isBlank() || username.isEmpty()) {
+			response.setStatus("401");
+			return response;
 		}
 
 		User user = userDao.getUserByUsername(username);
@@ -105,13 +107,14 @@ categoryDao.persistNewCategory(createCategory);
 				//quando a Sessão é criada é logo definido um timer para a mesma
 				SessionLogin newSession= new SessionLogin(user);
 				sessionDao.persist(newSession);
-					
-				response = newSession.getToken(); 
+				String token= newSession.getToken();
+				response.setStatus("200");
+				response.setToken(token);
 			} else {
-				response = "400";
+				response.setStatus("400");
 			}
 		} else {
-			response = "400";
+			response.setStatus("400");
 		}
 
 		return response;

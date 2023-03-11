@@ -7,10 +7,12 @@ import bean.AppManagement;
 import bean.TaskBean;
 import bean.UserBean;
 import dto.TaskDto;
+import dto.TokenDto;
 import dto.UpdateCategoryDto;
 import dto.UserDto;
 import entity.LoginRequestPojo;
 import jakarta.inject.Inject;
+import jakarta.json.Json;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Consumes;
@@ -71,20 +73,21 @@ public class ManageService {
 	// ESPECIFICAÇÃO R1 - login
 	@POST
 	@Path("/users/login")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response login(LoginRequestPojo login) {
+	//@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response login(@HeaderParam("password")String password, @HeaderParam("username") String username ) {
 		
-		String loginResponse = userBean.validateLogin(login);
+		TokenDto loginResponse = userBean.validateLogin(username,password);
 	
-		
-		switch (loginResponse) {
+		String status=loginResponse.getStatus();
+		switch (status) {
 		case "400":
 			return Response.status(400).entity(failed).build();
 		case "401":
 			return Response.status(401).entity(unauthorized).build();
 		default:
-			String token = loginResponse;
-			return Response.status(200).entity("Success! " + token).build();
+		//	String token = loginResponse;
+			return Response.status(200).entity(loginResponse).build();
 		}
 
 	}

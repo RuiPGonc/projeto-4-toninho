@@ -9,11 +9,16 @@ function Home() {
   const { isLogin } = useContext(AppContext);
   const navigate = useNavigate();
 
+  const{token}=useContext(AppContext);
+
+
   useEffect(() => {
     if (!isLogin) {
       navigate("/", { replace: true });
     }
   }, [isLogin]);
+
+  console.log(token);
 
   return (
     <div className="Home" id="home-outer-container">
