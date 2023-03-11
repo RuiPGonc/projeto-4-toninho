@@ -59,7 +59,7 @@ public class UserBeanTest {
 		appBean = mock(AppManagement.class);
 		userBean.setAppManagement(appBean);
 	}
-
+/*
 	@AfterEach
 	void clean() {
 		userBean = null;

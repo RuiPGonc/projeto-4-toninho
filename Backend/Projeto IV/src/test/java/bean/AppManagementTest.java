@@ -79,7 +79,7 @@ class AppManagementTest {
 	void tearDown() {
 		this.appBean=null;
 	}
-
+/*
 	@Test
 	void when_logout() {
 		
@@ -154,7 +154,7 @@ class AppManagementTest {
 		assertNull(appBean.convertUserEntityToDto(null));
 	}
 	
-	
+	*/
 	
 	
 

@@ -54,14 +54,29 @@ public class ManageService {
 	String forbiden = "Forbidden!";
 
 //------------- OPERATIONS  ------------------
-// ESPECIFICAÇÃO R1 - login
+
+	//Iniciar a aplicação com dados
+	@POST
+	@Path("/users/start")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void startApp() {
+
+		boolean testing=true;
+		if(testing) {userBean.CRIAR_oBJETOS_TESTE();}
+	}
+	
+	
+	
+	
+	// ESPECIFICAÇÃO R1 - login
 	@POST
 	@Path("/users/login")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response login(LoginRequestPojo login) {
-
+		
 		String loginResponse = userBean.validateLogin(login);
-		System.out.println("aqui");
+	
+		
 		switch (loginResponse) {
 		case "400":
 			return Response.status(400).entity(failed).build();

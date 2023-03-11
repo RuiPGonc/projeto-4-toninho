@@ -48,21 +48,38 @@ public class UserBean implements Serializable {
 	SessionDao sessionDao;
 
 	
-	public void CRIAR_oBJETOS() {
+	public void CRIAR_oBJETOS_TESTE() {
 		
-		UserDto novoAdmin=new UserDto("admin", "Dr Helder", "Antunes", "a@s.pt", "234324", "aaaa","0000", "yes");
-		
-		//	public UserDto(String username, String firstName, String lastName, String email, String phone, String photoUrl, String token, String admin) {
-		boolean a = addAdmin(novoAdmin,"0000","1232");
+		UserDto novoAdmin=new UserDto("admin", "Dr Helder", "Antunes", "aa@sapo.pt", "234324", "aaaa","0000", "yes");
+	
+		//cirar o user
+		Long userId = 999L;
+		String username = novoAdmin.getUsername();
+		String password="1232";
+		String pass = DigestUtils.md5Hex(password).toUpperCase(); // encripta a password
+		String firstName = novoAdmin.getFirstName();
+		String lastName = novoAdmin.getLastName();
+		String email = novoAdmin.getEmail();
+		String phone = novoAdmin.getPhone();
+		String photoUrl = novoAdmin.getPhotoUrl();
+		User userEntity = new User(username, userId, pass, firstName, lastName, email, phone, photoUrl);
+		userDao.persistNewUser(userEntity);
+		userEntity.setAdmin("yes");
+		userDao.merge(userEntity);
 
-		UpdateCategoryDto categoria= new UpdateCategoryDto("Categoria 1");
-		boolean c = createNewCategory(categoria, novoAdmin.getUserId(), "0000");
+Category createCategory = new Category("Categoria 1", userEntity);
+categoryDao.persistNewCategory(createCategory);
 		
-		TaskDto task= new TaskDto("Tarefa 1","detalhes da tarefa","30/03/2022 18:30",1,"29/02/2022 18:30",true,0);
-		
-		boolean t = taskBean.addTask(task, "0000");
 
-				
+		System.out.println("Categoria criada");
+		TaskDto taskdto= new TaskDto("Tarefa 1","detalhes da tarefa","30/03/2022 18:30",1,"29/02/2022 18:30",true,0);
+		System.out.println(taskdto.getDeadline());
+		
+		
+		Task ta= taskBean.createTask(taskdto, userEntity);
+		taskDao.persistNewTask(ta);
+		
+		
 		
 	}
 	
@@ -70,14 +87,7 @@ public class UserBean implements Serializable {
 	// ESPECIFICAÇÃO R1 - validar login
 	public String validateLogin(LoginRequestPojo login) {
 
-		boolean testing=true;
-		
-		if(testing) {
-			CRIAR_oBJETOS();
-		}
-		
-			
-		
+
 		String response;
 		String username = login.getUsername();
 		String password = DigestUtils.md5Hex(login.getPassword()).toUpperCase();
@@ -111,15 +121,16 @@ public class UserBean implements Serializable {
 	public boolean addAdmin(UserDto newAdmin, String token, String password) {
 
 		boolean added = addUser(newAdmin, password, token);
+		
 		if (added) {
 			User userNewAdmin = userDao.findUserByUsername(newAdmin.getUsername());
-			System.out.println(userNewAdmin.getEmail());
+
 			User loged = userDao.findUserByToken(token);
-			System.out.println(loged.getFirstName());
+
 			appBean.updateSessionTime(token); // define o session time
 
 			updateUserRole(userNewAdmin.getUserId(), token);
-			System.out.println(userNewAdmin.getAdmin() + "ponto XX");
+
 			return true;
 		}
 		return false;
