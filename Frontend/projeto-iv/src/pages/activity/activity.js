@@ -1,22 +1,32 @@
-import React  from "react";
+import React from "react";
 import Sidebar from "../../components/navbar/Sidebar";
-import { useState, useEffect,useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import "./activity.css";
-import { AppContext } from "../../router/index";
 import { useNavigate } from "react-router-dom";
 
+import { AppContext } from "../../router/index";
+
+import { getUserTaskList, newTask } from "./actions";
+import { useStore } from "../../store/userStore";
+
 function Activity() {
-  const [activities, setActivities] = useState([]);
+  const [myactivities, setActivities] = useState([]);
   const [inputs, setInputs] = useState({});
 
   const { isLogin } = useContext(AppContext);
+  //const { credentials } = useContext(AppContext);
   const navigate = useNavigate();
+
+  //const username=useStore((state)=>state.username);
+  const userId = useStore((state) => state.userId);
+  const token = useStore((state) => state.token);
+
+  //se não estiver logado é redirecionado para a pagina de login
   useEffect(() => {
     if (!isLogin) {
-      navigate("/", { replace: true });
+      //  navigate("/", { replace: true });
     }
-  }, [isLogin]); 
-
+  }, [isLogin]);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -26,46 +36,23 @@ function Activity() {
   };
 
   useEffect(() => {
-    fetch(
-      "http://localhost:8080/Projeto-iv/rest/ToDo_app/users/activities/999",
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          token: "3DAF6E65CD1CA4535788DB7F382E4DB3",
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((response) => {
-        setActivities(response);
-      });
+    getUserTaskList(userId, token).then((response) => {
+      setActivities(response);
+    });
+    //setActivities(["a", "b"]);
   }, []);
 
   //carregar nova tarefa
   const handleSubmit = (event) => {
     event.preventDefault();
+    const response = newTask(token, inputs);
+    if (response.status === 200) {
+      setActivities((values) => [...values, inputs]);
 
-    fetch("http://localhost:8080/Projeto-iv/rest/ToDo_app/users/task", {
-      method: "POST",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        token: "3DAF6E65CD1CA4535788DB7F382E4DB3",
-      },
-      body: JSON.stringify(inputs),
-    }).then(function (response) {
-      if (response.status === 200) {
-        //alert('activity is added successfully)
-
-        //you can change the endpoint to return the new activity created in order to have its ID to be shown in the table
-
-        //this line automatically change the table of activities and add a new row
-        setActivities((values) => [...values, inputs]);
-      } else {
-        alert("something went worng");
-      }
-    });
+      console.log(myactivities);
+    } else {
+      alert("something went worng");
+    }
   };
 
   return (
@@ -88,13 +75,13 @@ function Activity() {
               </tr>
             </thead>
             <tbody>
-              {activities.map((task) => (
-                <tr key={task.Id}>
-                  <td>{task.Id}</td>
-                  <td>{task.Title}</td>
-                  <td>{task.Category}</td>
-                  <td>{task.Details}</td>
-                  <td>{task.Done}</td>
+              {myactivities.map((task) => (
+                <tr key={task.id}>
+                  <td>{task.id}</td>
+                  <td>{task.title}</td>
+                  <td>{task.categoryId}</td>
+                  <td>{task.details}</td>
+                  <td>{task.done}</td>
                 </tr>
               ))}
             </tbody>

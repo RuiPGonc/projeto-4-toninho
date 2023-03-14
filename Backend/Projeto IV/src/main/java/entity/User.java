@@ -16,7 +16,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="User")
 @NamedQuery(name = "User.findUsersByRole", query = "SELECT u FROM User u WHERE u.admin = :role")
-//@NamedQuery(name = "User.findUserByToken", query = "SELECT DISTINCT u FROM User u WHERE u.token = :token")
 @NamedQuery(name = "User.findUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
 @NamedQuery(name = "User.findUserById", query = "SELECT u FROM User u WHERE u.userId = :userId")
 public class User implements Serializable{

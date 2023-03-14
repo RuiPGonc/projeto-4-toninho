@@ -2,6 +2,7 @@ package service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import bean.AppManagement;
 import bean.TaskBean;
@@ -11,6 +12,7 @@ import dto.TokenDto;
 import dto.UpdateCategoryDto;
 import dto.UserDto;
 import entity.LoginRequestPojo;
+import entity.Task;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,9 +32,9 @@ import jakarta.ws.rs.core.Response;
 
 /*Query para criar um novo Admin:
  
-  INSERT INTO user (`userId`, `credencias admin`, `email`, `first Name`, `last Name`, `password`, `phone`, `photoUrl`, `estado da Conta`, `token`, `username`,`timeSessionLoged`) 
-VALUES ('999', 'yes', 'a@s.pt', 'drHelder', 'Antunes', '1232', '234324', 'aaaa', 'ativa', '0', 'admin','0');
-  
+ INSERT INTO user (`userId`, `credencias admin`, `email`, `first Name`, `last Name`, `password`, `phone`, `photoUrl`, `estado da Conta`, `username`) 
+VALUES ('999', 'yes', 'a@s.pt', 'drHelder', 'Antunes', '1232', '234324', 'aaaa', 'ativa','admin');
+
   */
 
 @Path("/ToDo_app")
@@ -487,7 +489,9 @@ public class ManageService {
 			return Response.status(403).entity(forbiden).build();
 		default:
 
-			ArrayList<HashMap<String, String>> tasks = taskBean.getTaskList(token, userId);
+			ArrayList<TaskDto> tasks = taskBean.getTaskList(token, userId);
+
+			
 
 			if (tasks != null) {
 				return Response.status(200).entity(tasks).build();

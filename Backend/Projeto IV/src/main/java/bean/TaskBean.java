@@ -165,7 +165,7 @@ public class TaskBean implements Serializable {
 	}
 
 // ESPECIFICAÇÃO A6 - obter lista de tarefas de um determinado utilizador
-	public ArrayList<HashMap<String, String>> getTaskList(String token, long userId) {
+	public ArrayList<TaskDto> getTaskList(String token, long userId) {
 		User uLoged = userDao.findUserByToken(token);
 		long uLogedId = uLoged.getUserId();
 		boolean admin = uLoged.getAdmin().equals("yes");
@@ -179,9 +179,35 @@ public class TaskBean implements Serializable {
 			List<Task> userList = getUserTasks(userId);
 			// taskDao.findAll();
 
-			ArrayList<HashMap<String, String>> taskHash = convertToHask(userList);
+			//ArrayList<HashMap<String, String>> taskHash = convertToHask(userList);
 
-			return taskHash;
+			
+			////////////////////// teste
+			ArrayList<TaskDto> lista = new ArrayList<TaskDto>();
+			
+			for(Task t:userList) {
+				TaskDto element = new TaskDto();
+				
+				element.setTitle(t.getTitle());
+				element.setDetails(t.getDetails());
+				
+				element.setCategoryTitle(t.getCategoryTitle());
+				
+				element.setId(t.getId());
+				element.setDone(t.getDone());
+				element.setAlert(t.isAlert());
+				
+				
+				element.setFinishTime_2(t.getFinishTime());
+				element.setDeadline_2(t.getDeadline());
+				element.setCreationDate_2(t.getCreationDate());
+				
+				
+				//TaskDto taskConverted= appBean.convertEntityTaskToDTO(t);
+				lista.add(element);
+			}
+		
+			return lista;
 		}
 		return null;
 

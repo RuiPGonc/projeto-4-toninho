@@ -3,16 +3,19 @@ import Sidebar from "../../components/navbar/Sidebar";
 import { useNavigate } from "react-router-dom";
 
 import { AppContext } from "../../router/index";
+import {useStore} from "../../store/userStore";
+
 
 function Profile() {
   const { isLogin } = useContext(AppContext);
+  //const{credentials}=useContext(AppContext);
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!isLogin) {
       navigate("/", { replace: true });
     }
   }, [isLogin]); 
-
 
 
   return (

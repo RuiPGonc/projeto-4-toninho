@@ -1,17 +1,22 @@
 package dto;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Locale.Category;
 
+import dao.CategoryDao;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.xml.bind.annotation.XmlElement;
 import net.bytebuddy.asm.Advice.This;
 
-public class TaskDto {
+public class TaskDto{
+	
+CategoryDao categoryDao;
 
 	// ATRIBUTOS
 	@XmlElement
@@ -23,7 +28,8 @@ public class TaskDto {
 	private LocalDateTime deadline;
 	@XmlElement
 	private long categoryId; // a taskDto tem CategoryId, a Task tem CategoryTitle e Category ownerTask,
-								// porque é a Task que pressite na BD
+							// porque é a Task que pressite na BD
+	private String categoryTitle;
 	@XmlElement
 	private long id;
 	@XmlElement
@@ -116,6 +122,17 @@ public class TaskDto {
 		return creationDate.toString();
 	}
 
+	public String getCategoryTitle() {
+		return categoryTitle;
+	}
+
+	public void setCategoryTitle(long CategoryId) {
+		////////////////////////////////
+		Category categoryA= categoryDao.getCategoryById(CategoryId);
+		//String title= category
+		this.categoryTitle = categoryTitle;
+	}
+
 	public LocalDateTime createDate() {
 		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -128,11 +145,25 @@ public class TaskDto {
 	}
 
 	public void setFinishTime(String time) {
-		this.finishTime = convertToLocalDateTime(time);
+		System.out.println("**************finishTime  1*******************"+time);
+		if(!time.equals("0"))
+			this.finishTime = convertToLocalDateTime(time);
+	}
+	public void setFinishTime_2(String time) {
+		System.out.println("**************finishTime  2*******************"+time);
+		if(!time.equals("0"))
+			this.finishTime = LocalDateTime.parse(time);
+
 	}
 
 	public void setCreationDate(String time) {
-		this.creationDate = convertToLocalDateTime(time);
+		System.out.println("*******creationTime 1*************************"+time);
+		this.creationDate= convertToLocalDateTime(time);
+	}
+	public void setCreationDate_2(String time) {
+		System.out.println("*******creationTime 2*************************"+time);
+		this.creationDate= LocalDateTime.parse(time);
+		
 	}
 
 	public boolean getDelete() {
@@ -172,8 +203,16 @@ public class TaskDto {
 	}
 
 	public void setDeadline(String time) {
+		System.out.println("**************Deadline*******************"+time);
+
 		if(time=="")time="0";
-		this.deadline = convertToLocalDateTime(time);
+		this.deadline =convertToLocalDateTime(time);
+	}
+	public void setDeadline_2(String time) {
+		System.out.println("**************Deadline*******************"+time);
+
+		if(time=="")time="0";
+		this.deadline = LocalDateTime.parse(time);
 	}
 
 	public long getCategoryId() {

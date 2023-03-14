@@ -2,12 +2,18 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../router/index";
 import { performLogin } from "./actions";
+import {useStore} from "../../store/userStore";
+
 
 function Login() {
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
   const { changeLoginStatus } = useContext(AppContext);
-  const { updateToken } = useContext(AppContext);
+  const { setCredentials } = useContext(AppContext);
+
+  const updateName=useStore((state)=>state.updateName);
+  const updateToken=useStore((state)=>state.updateToken);
+  const updateUserId=useStore((state)=>state.updateUserId);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -22,9 +28,19 @@ function Login() {
     // validation of login
     const response = await performLogin(inputs.username, inputs.password);
 
-    localStorage.setItem("username", inputs.username);
-    changeLoginStatus();
-    updateToken(response); //atualizar o token no AppContext
+
+  updateName(inputs.username); //atualiza o username na Store
+ 
+  updateToken(response.token);
+  updateUserId(response.userId);
+    
+    //localStorage.setItem("username", inputs.username);
+    
+    changeLoginStatus(); //altera o estado do user para Logado
+
+   // setCredentials(response); //atualizar o token e o UserId no AppContext
+    // updateUserId(response.userId);
+
     navigate("/home", { replace: true });
   };
 

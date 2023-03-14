@@ -107,9 +107,12 @@ categoryDao.persistNewCategory(createCategory);
 				//quando a Sessão é criada é logo definido um timer para a mesma
 				SessionLogin newSession= new SessionLogin(user);
 				sessionDao.persist(newSession);
+				
 				String token= newSession.getToken();
 				response.setStatus("200");
 				response.setToken(token);
+				response.setUserId(user.getUserId());
+				
 			} else {
 				response.setStatus("400");
 			}

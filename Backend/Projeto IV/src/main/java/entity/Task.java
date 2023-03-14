@@ -91,6 +91,7 @@ public class Task implements Serializable {
 		} else {
 			this.creationDate = creationDate;
 		}
+		
 		if (alert && timeReminder.isZero()) {
 			timeReminder = Duration.ofDays(7); // por default se o User definir Alerta mas não passar o tempo para o
 												// reminder, este é definido com 7 dias
