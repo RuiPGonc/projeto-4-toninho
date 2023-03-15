@@ -1,4 +1,4 @@
-import React, { useContext, useState,useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { slide as Menu } from "react-burger-menu";
 import "./Sidebar.css";
 import { AppContext } from "../../router/index";
@@ -14,7 +14,6 @@ export default (props) => {
     if (adminCredentials === "yes") {
       setShowUserLink(true);
     }
-    
   });
   const showUserLinkStyle = {
     display: showUserLink ? "block" : "none",
