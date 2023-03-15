@@ -1,21 +1,19 @@
 package dto;
 
-import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Locale.Category;
 
 import dao.CategoryDao;
+import jakarta.ejb.EJB;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.xml.bind.annotation.XmlElement;
-import net.bytebuddy.asm.Advice.This;
 
 public class TaskDto{
-	
+
+@EJB
 CategoryDao categoryDao;
 
 	// ATRIBUTOS
@@ -126,10 +124,8 @@ CategoryDao categoryDao;
 		return categoryTitle;
 	}
 
-	public void setCategoryTitle(long CategoryId) {
-		////////////////////////////////
-		Category categoryA= categoryDao.getCategoryById(CategoryId);
-		//String title= category
+	public void setCategoryTitle(String categoryTitle) {
+		//entity.Category category= categoryDao.getCategoryById(CategoryId);
 		this.categoryTitle = categoryTitle;
 	}
 

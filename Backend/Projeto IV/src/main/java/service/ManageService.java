@@ -2,19 +2,15 @@ package service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import bean.AppManagement;
 import bean.TaskBean;
 import bean.UserBean;
+import dto.CategoryDto;
 import dto.TaskDto;
 import dto.TokenDto;
-import dto.UpdateCategoryDto;
 import dto.UserDto;
-import entity.LoginRequestPojo;
-import entity.Task;
 import jakarta.inject.Inject;
-import jakarta.json.Json;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Consumes;
@@ -75,7 +71,7 @@ public class ManageService {
 	// ESPECIFICAÇÃO R1 - login
 	@POST
 	@Path("/users/login")
-	//@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(@HeaderParam("password")String password, @HeaderParam("username") String username ) {
 		
@@ -144,7 +140,7 @@ public class ManageService {
 	@POST
 	@Path("/users/category/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addCategory(@HeaderParam("token") String token, UpdateCategoryDto updateCategory,
+	public Response addCategory(@HeaderParam("token") String token, CategoryDto updateCategory,
 			@PathParam("userId") long userId) {
 
 		String validLogin = appManage.authenticateUser(token);
@@ -172,7 +168,7 @@ public class ManageService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setCategory(@HeaderParam("token") String token, @PathParam("id") long id,
-			UpdateCategoryDto updateCategory) {
+			CategoryDto updateCategory) {
 
 		String validLogin = appManage.authenticateUser(token);
 
@@ -373,6 +369,7 @@ public class ManageService {
 	@POST
 	@Path("/users/newUser")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response addUser(UserDto u, @HeaderParam("token") String token, @HeaderParam("password") String password) {
 
 		String validLogin = appManage.authenticateUser(token);
@@ -390,7 +387,7 @@ public class ManageService {
 			Boolean response = userBean.addUser(u, password, token);
 
 			if (response) {
-				return Response.status(200).entity(success).build();
+				return Response.status(200).build();
 			} else {
 				return Response.status(400).entity(failed).build();
 			}
@@ -500,6 +497,31 @@ public class ManageService {
 			}
 		}
 	}
+	// ESPECIFICAÇÃO extra - obter lista de categorias de um utilizador
+		@GET
+		@Path("/users/categories/{userId}")
+		@Produces(MediaType.APPLICATION_JSON)
+		public Response getCategories(@PathParam("userId") long userId, @HeaderParam("token") String token) {
+
+			String authenticateUser = appManage.authenticateUser(token);
+
+			switch (authenticateUser) {
+			case "401":
+				return Response.status(401).entity(unauthorized).build();
+			case "403":
+				return Response.status(403).entity(forbiden).build();
+			default:
+
+				ArrayList<CategoryDto> categories = userBean.getCategories(token, userId);
+
+				if (categories != null) {
+					return Response.status(200).entity(categories).build();
+				} else {
+					return Response.status(400).entity(failed).build();
+				}
+			}
+		}
+
 
 	// A7- altera a role de um user/admin
 	@PUT

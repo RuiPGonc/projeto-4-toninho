@@ -30,6 +30,7 @@ public class CategoryDao  extends AbstractDao<Category>{
 		}
 		return category;
 	}
+	
 	public void persistNewCategory(Category newCategory) {
 		try {
 			this.persist(newCategory);

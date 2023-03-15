@@ -11,7 +11,7 @@ import { useStore } from "../../store/userStore";
 
 function Activity() {
   const [myactivities, setActivities] = useState([]);
-  const [inputs, setInputs] = useState({});
+  //const [inputs, setInputs] = useState({});
 
   const { isLogin } = useContext(AppContext);
   //const { credentials } = useContext(AppContext);
@@ -28,32 +28,18 @@ function Activity() {
     }
   }, [isLogin]);
 
-  const handleChange = (event) => {
+  /*const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
 
     setInputs((values) => ({ ...values, [name]: value }));
-  };
+  };*/
 
   useEffect(() => {
     getUserTaskList(userId, token).then((response) => {
       setActivities(response);
     });
-    //setActivities(["a", "b"]);
   }, []);
-
-  //carregar nova tarefa
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const response = newTask(token, inputs);
-    if (response.status === 200) {
-      setActivities((values) => [...values, inputs]);
-
-      console.log(myactivities);
-    } else {
-      alert("something went worng");
-    }
-  };
 
   return (
     <div className="Activity" id="activity-outer-container">
@@ -79,28 +65,13 @@ function Activity() {
                 <tr key={task.id}>
                   <td>{task.id}</td>
                   <td>{task.title}</td>
-                  <td>{task.categoryId}</td>
+                  <td>{task.categoryTitle}</td>
                   <td>{task.details}</td>
                   <td>{task.done}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-        <h1>Add New Activity</h1>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Activity Title
-              <input
-                type="text"
-                name="title"
-                defaultValue=""
-                onChange={handleChange}
-              />
-            </label>
-            <input type="submit" name="Add" />
-          </form>
         </div>
       </div>
     </div>

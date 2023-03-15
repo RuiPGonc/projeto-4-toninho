@@ -4,8 +4,10 @@ import { Route, Routes } from "react-router-dom";
 
 import Login from "../pages/login/login";
 import Home from "../pages/home/home";
-import Activity from "../pages/activity/activity";
+import Activity from "../pages/showTaskList/showTaskList";
 import Profile from "../pages/profile/profile";
+import Register from "../pages/register/register";
+import NewTask from "../pages/newTasks/newTask";
 
 export const AppContext = createContext();
 
@@ -23,7 +25,7 @@ function AppRouter() {
       userId: response.userId,
     }));
   };
-  
+
   const newValue = {
     isLogin: isLogin,
     changeLoginStatus: changeLoginStatus,
@@ -33,40 +35,17 @@ function AppRouter() {
 
   return (
     <AppContext.Provider value={newValue}>
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-              <Login />
-          }
-        />
-        <Route
-          path="/home"
-          element={
-              <Home />
-          }
-        />
-        <Route
-          path="/activity"
-          element={
-              <Activity />
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-              <Profile />
-          }
-        />
-        <Route
-          path="/login"
-          element={
-              <Login />
-          }
-        />
-      </Routes>
-    </Router>
+      <Router>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/activity" element={<Activity />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/newTask" element={<NewTask />} />
+        </Routes>
+      </Router>
     </AppContext.Provider>
   );
 }

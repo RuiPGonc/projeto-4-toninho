@@ -180,7 +180,6 @@ public class TaskBean implements Serializable {
 			// taskDao.findAll();
 
 			//ArrayList<HashMap<String, String>> taskHash = convertToHask(userList);
-
 			
 			////////////////////// teste
 			ArrayList<TaskDto> lista = new ArrayList<TaskDto>();
@@ -191,7 +190,9 @@ public class TaskBean implements Serializable {
 				element.setTitle(t.getTitle());
 				element.setDetails(t.getDetails());
 				
-				element.setCategoryTitle(t.getCategoryTitle());
+				Category category=categoryDao.getCategoryById(t.getCategory().getId());
+				String CategoryTitle=category.getTitle();
+				element.setCategoryTitle(CategoryTitle);
 				
 				element.setId(t.getId());
 				element.setDone(t.getDone());

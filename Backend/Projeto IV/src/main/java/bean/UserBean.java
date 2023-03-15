@@ -1,13 +1,10 @@
 package bean;
 
 import java.io.Serializable;
-import java.lang.invoke.StringConcatFactory;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
-
-import com.mysql.cj.Session;
 
 import dao.CategoryDao;
 import dao.SessionDao;
@@ -16,10 +13,9 @@ import dao.UserDao;
 import dto.PassDto;
 import dto.TaskDto;
 import dto.TokenDto;
-import dto.UpdateCategoryDto;
+import dto.CategoryDto;
 import dto.UserDto;
 import entity.Category;
-import entity.LoginRequestPojo;
 import entity.SessionLogin;
 import entity.Task;
 import entity.User;
@@ -89,7 +85,6 @@ categoryDao.persistNewCategory(createCategory);
 	// ESPECIFICAÇÃO R1 - validar login
 	public TokenDto validateLogin(String username,String passwordLoged) {
 
-
 		TokenDto response = new TokenDto();
 		//String username = login.getUsername();
 		String password = DigestUtils.md5Hex(passwordLoged).toUpperCase();
@@ -112,6 +107,7 @@ categoryDao.persistNewCategory(createCategory);
 				response.setStatus("200");
 				response.setToken(token);
 				response.setUserId(user.getUserId());
+				response.setAdminCredentials(user.getAdmin());
 				
 			} else {
 				response.setStatus("400");
@@ -377,7 +373,7 @@ categoryDao.persistNewCategory(createCategory);
 	}
 
 	// ESPECIFICAÇÃO U3 - ALTERAR CATEGORIA
-	public boolean updateCategory(long categoryId, String token, UpdateCategoryDto update) {
+	public boolean updateCategory(long categoryId, String token,CategoryDto update) {
 
 		User logedUser = userDao.findUserByToken(token);
 		User u = userDao.findUserByToken(token);
@@ -527,7 +523,7 @@ categoryDao.persistNewCategory(createCategory);
 		return null;
 	}
 
-	public boolean createNewCategory(UpdateCategoryDto updateCategory, long userId, String token) {
+	public boolean createNewCategory(CategoryDto updateCategory, long userId, String token) {
 
 		User uLoged = userDao.findUserByToken(token);
 		long uLogedId = uLoged.getUserId();
@@ -573,5 +569,34 @@ categoryDao.persistNewCategory(createCategory);
 	public void setSessionDao(SessionDao sessionDao) {
 		this.sessionDao=sessionDao;
 		
+	}
+
+
+	public ArrayList<CategoryDto> getCategories(String token, long userId) {
+			User uLoged = userDao.findUserByToken(token);
+			long uLogedId = uLoged.getUserId();
+			boolean admin = uLoged.getAdmin().equals("yes");
+
+			if (userId == uLogedId || admin || userId == 0) {
+				if (userId == 0) {
+					userId = uLoged.getUserId();
+				}
+				appBean.updateSessionTime(token); // atualiza o session time
+
+				List<Category> categoryList_All = categoryDao.findAll();
+				
+				ArrayList<CategoryDto> userList=new ArrayList<>();
+				
+				for(Category c:categoryList_All) {
+					if(c.getOwnerUser().getUserId()==userId) {
+						CategoryDto cat = new CategoryDto();
+						cat.setTitle(c.getTitle());
+						cat.setCategoryId(c.getId());
+						userList.add(cat);
+					}
+				}
+				return userList;
+			}
+			return null;
 	}
 }
