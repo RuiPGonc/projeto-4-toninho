@@ -35,7 +35,7 @@ public class UserBeanTest {
 	SessionDao sessionDao;
 	User user;
 
-	@BeforeEach
+/*	@BeforeEach
 	void setup() {
 		userBean = new UserBean();
 

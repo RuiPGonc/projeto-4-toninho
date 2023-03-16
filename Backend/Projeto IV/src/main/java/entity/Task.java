@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalUnit;
 import java.util.Calendar;
 
@@ -18,11 +19,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "Task")
 @NamedQuery(name = "Task.findTaskById", query = "SELECT a FROM Task a WHERE a.id = :id")
-//@NamedQuery(name = "Task.findTaskListByUserId", query = "SELECT a FROM Task a WHERE a.ownerTask.getOwnerUser().getUserId() = :userId")
 public class Task implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -38,22 +39,8 @@ public class Task implements Serializable {
 	@Column(name = "details", nullable = true, unique = false, updatable = true, length = 65535, columnDefinition = "TEXT")
 	private String details;
 
-	// @CreationTimestamp
-	@Column(name = "creation_date", nullable = false, unique = false, updatable = false)
-	private String creationDate;
-	// private Timestamp creationDate;
-
-	@Column(name = "deadline", nullable = true, unique = false, updatable = true)
-	private String deadline;
-
-	@Column(name = "category_Title", nullable = true, unique = false, updatable = true)
-	private String categoryTitle;
-
-	@Column(name = "finishTime", nullable = false, unique = false, updatable = true)
-	private String finishTime = "0";
-
 	@Column(name = "done", nullable = false, unique = false, updatable = true)
-	private String done = "no";
+	private boolean done = false;
 
 	@Column(name = "alert", nullable = false, unique = false, updatable = true)
 	private boolean alert = false;
@@ -61,50 +48,53 @@ public class Task implements Serializable {
 	@Column(name = "deletedTask", nullable = false, unique = false, updatable = true)
 	private boolean deletedTask = false;
 
+	@Column(name = "creation_date", nullable = false, unique = false, updatable = false)
+	private LocalDateTime creationDate;
+	
+	@Column(name = "deadline", nullable = true, unique = false, updatable = true)
+	private LocalDateTime deadline;
+	
+	@Column(name = "category_Title", nullable = true, unique = false, updatable = true)
+	private String categoryTitle;
+	
+	@Column(name = "startTime", nullable = false, unique = false, updatable = true)
+	private LocalDateTime startTime;
+	
+	@Column(name = "finishTime", nullable = true, unique = false, updatable = true)
+	private LocalDateTime finishTime;
 	@Column(name = "TimeReminder", nullable = true, unique = false, updatable = true)
-	private Duration timeReminder;
+	private LocalDateTime timeReminder;
 
-	// Owning Side Category - Activity
 	@ManyToOne
 	private Category ownerTask;
 
-	// @ManyToOne
-	// private User user;
+	
 	public Task() {
 	}
 
-	public Task(String title, String details, String deadline, Category ownerTask, long id, String creationDate,
-			boolean alert, Duration timeReminder) {
+	public Task(String title, String details, LocalDateTime deadline, Category ownerTask, long id,
+			boolean alert, LocalDateTime timeReminder,boolean done,LocalDateTime startTime,LocalDateTime creationDate, LocalDateTime finishTime) {
 		this.title = title;
 		this.details = details;
-		this.deadline = deadline;
+		this.ownerTask = ownerTask;
 		this.categoryTitle = ownerTask.getTitle();
 		this.id = id;
 		this.alert = alert;
-		this.ownerTask = ownerTask;
+		this.done=done;
+		this.creationDate = creationDate;
+		this.startTime=startTime;
+		this.deadline=deadline;
 		this.timeReminder = timeReminder;
-
-	
-		if (creationDate == "") {
-			creationDate = createCreationTime();
-			this.creationDate = creationDate;
-		} else {
-			this.creationDate = creationDate;
-		}
+		this.done=done;
+		this.finishTime=finishTime;
 		
-		if (alert && timeReminder.isZero()) {
-			timeReminder = Duration.ofDays(7); // por default se o User definir Alerta mas não passar o tempo para o
-												// reminder, este é definido com 7 dias
-			this.timeReminder = timeReminder;
-		}
 	}
-
-	public Duration getTimeReminder() {
+	public LocalDateTime getTimeReminder() {
 		return timeReminder;
 	}
 
-	public void setTimeReminder(Duration timeReminder) {
-		this.timeReminder = timeReminder;
+	public LocalDateTime getStartTime() {
+		return startTime;
 	}
 
 	public long getId() {
@@ -116,10 +106,8 @@ public class Task implements Serializable {
 	}
 
 	public long createId() {
-
 		long time = System.currentTimeMillis();
 		String timeString = time + "";
-		// this.id = timeString;
 		return id;
 	}
 
@@ -147,25 +135,31 @@ public class Task implements Serializable {
 		this.details = details;
 	}
 
-	public String getCreationDate() {
+	public LocalDateTime getCreationDate() {
 		return creationDate;
 	}
-
-	public void setCreationDate(String creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	public String getDeadline() {
+	public LocalDateTime getDeadline() {
 		return deadline;
 	}
 
+	public void setStartTime(LocalDateTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public void setTimeReminder(LocalDateTime timeReminder) {
+		this.timeReminder = timeReminder;
+	}
+	public void setCreationDate(LocalDateTime creationDate) {
+		this.creationDate=creationDate;
+	}
+	
 	@PostConstruct
 	public void addTaskToCategory(Task this) {
 		ownerTask.setUserTaskList(this);
 	}
 
-	public void setDeadline(String deadline) {
-		this.deadline = deadline;
+	public void setDeadline(LocalDateTime deadline) {
+		this.deadline =deadline;
 	}
 
 	public Category getCategory() {
@@ -185,19 +179,22 @@ public class Task implements Serializable {
 		this.categoryTitle = categoryTitle;
 	}
 
-	public String getFinishTime() {
-		return finishTime;
+	public LocalDateTime getFinishTime() {
+		return this.finishTime;
 	}
 
-	public void setFinishTime(String finishTime) {
-		this.finishTime = finishTime;
+	public void setFinishTime(LocalDateTime time) {
+		this.finishTime =time;
 	}
-
-	public String getDone() {
+	public void setFinishTime_null() {
+		this.finishTime=null;
+	}
+	
+	public boolean getDone() {
 		return done;
 	}
 
-	public void setDone(String done) {
+	public void setDone(boolean done) {
 		this.done = done;
 	}
 
@@ -213,21 +210,6 @@ public class Task implements Serializable {
 		return ownerTask;
 	}
 
-	public String createFinishtime() {
-		long time = System.currentTimeMillis();
-		String timeString = time + "";
-		this.finishTime = timeString;
-		return finishTime;
-	}
 
-	public String createCreationTime() {
-
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDateTime todayDate = LocalDate.now().atTime(0, 1);
-
-		return todayDate.toString();
-	}
-
-	
 
 }

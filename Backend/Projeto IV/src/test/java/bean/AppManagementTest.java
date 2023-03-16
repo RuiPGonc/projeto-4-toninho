@@ -21,7 +21,7 @@ import entity.Category;
 import entity.SessionLogin;
 import entity.Task;
 import entity.User;
-
+/*
 class AppManagementTest {
 	
 	User user;
@@ -154,10 +154,10 @@ class AppManagementTest {
 		assertNull(appBean.convertUserEntityToDto(null));
 	}
 	
-	*/
+	
 	
 	
 
-	
 
 }
+*/

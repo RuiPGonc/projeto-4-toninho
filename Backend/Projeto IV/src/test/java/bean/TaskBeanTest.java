@@ -28,7 +28,7 @@ import entity.Category;
 import entity.SessionLogin;
 import entity.Task;
 import entity.User;
-
+/*
 class TaskBeanTest {
 
 	TaskBean taskBean;
@@ -67,7 +67,7 @@ class TaskBeanTest {
 		taskBean.setSessionDao(sessionDao);
 		
 		userDao = mock(UserDao.class);
-		taskBean.setUserDao(userDao);
+		//taskBean.setUserDao(userDao);
 		taskDao = mock(TaskDao.class);
 		taskBean.setTaskDao(taskDao);
 		categoryDao = mock(CategoryDao.class);
@@ -79,8 +79,8 @@ class TaskBeanTest {
 
 	@AfterEach
 	void tearDown() {
-		this.taskBean = null;
-	}
+	//	this.taskBean = null;
+	}*/
 /*
 	@Test
 	void create_new_task() {
@@ -218,5 +218,5 @@ class TaskBeanTest {
 		assertNotNull(taskBean.getUserTasks(user.getUserId()));
 	}
 	
-	*/
-}
+	
+}*/

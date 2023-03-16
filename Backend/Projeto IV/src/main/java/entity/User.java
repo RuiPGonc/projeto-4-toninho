@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="User")
-@NamedQuery(name = "User.findUsersByRole", query = "SELECT u FROM User u WHERE u.admin = :role")
+@NamedQuery(name = "User.findUsersByRole", query = "SELECT u FROM User u WHERE u.admin = :admin")
 @NamedQuery(name = "User.findUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
 @NamedQuery(name = "User.findUserById", query = "SELECT u FROM User u WHERE u.userId = :userId")
 public class User implements Serializable{
@@ -48,10 +48,10 @@ public class User implements Serializable{
 	private String photoUrl;
 
 	@Column(name="credencias admin",nullable=false, unique = false, updatable = true )
-	private String admin="no";
+	private boolean admin=false;
 	
 	@Column(name="estado da Conta",nullable=false, unique = false, updatable = true )
-	private String state="ativa";
+	private boolean state=true;
 	
 	@OneToMany(mappedBy = "ownerUser", fetch = FetchType.EAGER)
 	private List<Category> userListCategory=new ArrayList<Category>();
@@ -81,7 +81,7 @@ public class User implements Serializable{
 		//this.token=token;
 	}
 	
-	public User(String username,long userId, String password, String firstName, String lastName, String email, String phone, String photoUrl,String admin) {
+	public User(String username,long userId, String password, String firstName, String lastName, String email, String phone, String photoUrl,boolean admin) {
 		this.username = username;
 		this.userId=userId;
 		this.password = password;
@@ -114,11 +114,11 @@ public class User implements Serializable{
 	}
 
 
-	public String getState() {
+	public boolean getState() {
 		return state;
 	}
 
-	public void setState(String state) {
+	public void setState(boolean state) {
 		this.state = state;
 	}
 
@@ -141,11 +141,11 @@ public class User implements Serializable{
 		this.userId = userId;
 	}
 
-	public String getAdmin() {
+	public boolean getAdmin() {
 		return admin;
 	}
 
-	public void setAdmin(String admin) {
+	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}
 

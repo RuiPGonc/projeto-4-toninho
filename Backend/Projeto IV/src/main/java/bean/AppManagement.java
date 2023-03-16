@@ -1,6 +1,7 @@
 package bean;
 
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 import dao.CategoryDao;
@@ -27,6 +28,9 @@ public class AppManagement implements Serializable {
 	CategoryDao categoryDao;
 	@EJB
 	SessionDao sessionDao;
+	
+	
+	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 	// LOGOUT
 	public boolean logout(String token) {
@@ -120,10 +124,10 @@ public class AppManagement implements Serializable {
 			element.setCategoryId(task.getId());
 			element.setId(task.getId());
 			element.setDone(task.getDone());
-			element.setFinishTime(task.getFinishTime());
+			element.setFinishTime(task.getFinishTime().format(dateFormatter));
 			element.setAlert(task.isAlert());
-			element.setDeadline(task.getDeadline());
-			element.setCreationDate(task.getCreationDate());
+			element.setDeadline(task.getDeadline().format(dateFormatter));
+			element.setCreationDate(task.getCreationDate().format(dateFormatter));
 
 			return element;
 		}

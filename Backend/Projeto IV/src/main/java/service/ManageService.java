@@ -220,6 +220,8 @@ public class ManageService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addTask(TaskDto a, @HeaderParam("token") String token) {
 
+System.out.println("jão sei como pegar nisto!");
+
 		String authenticateUser = appManage.authenticateUser(token);
 
 		switch (authenticateUser) {
@@ -228,7 +230,7 @@ public class ManageService {
 		case "403":
 			return Response.status(403).entity(forbiden).build();
 		default:
-
+System.out.println("entrar no Fetch");
 			boolean added = taskBean.addTask(a, token);
 
 			if (added) {

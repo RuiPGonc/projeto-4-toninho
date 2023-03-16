@@ -2,6 +2,9 @@ package bean;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,30 +44,35 @@ public class TaskBean implements Serializable {
 	@EJB
 	SessionDao sessionDao;
 
+	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 	// ESPECIFICAÇÃO U5 - adicionar nova tarefa
 	public Task createTask(TaskDto newTask, User u) {
 
-		// obtido diretamente do user
 		String title = newTask.getTitle();
 		String details = newTask.getDetails();
-		String deadline = newTask.getDeadline();
-
+//	System.out.println("deadline"+deadline);
+		LocalDateTime deadline = convert_Deadline_ToLocalDateTime(newTask.getDeadline());
 		boolean alert = newTask.isAlert();
-		Duration timeReminder = newTask.getTimeReminder();
-
-		// gerado
+		LocalDateTime timeReminder = convert_TimeReminder_ToLocalDateTime(newTask.getTimeReminder(), deadline);
+//System.out.println("timeReminder "+ timeReminder);
+		LocalDateTime startTime = convert_StartTime_ToLocalDateTime(newTask.getStartTime());
+//	System.out.println("startTime "+startTime);
+		boolean done = newTask.getDone();
+		LocalDateTime finishTime = null;
+		if (done) {
+			finishTime = getLocalDateTime_System().withSecond(0);
+		}
 		long id = newTask.getId();
-		String creationDate = newTask.getCreationDate();
-
+		LocalDateTime creationDate = getLocalDateTime_System().withSecond(0);
 		long categoryId = newTask.getCategoryId();
-
 		Category category = categoryDao.getCategoryById(categoryId);
-
 		if (category == null) {
 			return null;
 		}
 
-		return (new Task(title, details, deadline, category, id, creationDate, alert, timeReminder));
+		return (new Task(title, details, deadline, category, id, alert, timeReminder, done, startTime, creationDate,
+				finishTime));
 	}
 
 //Especificação U4
@@ -101,7 +109,7 @@ public class TaskBean implements Serializable {
 
 			appBean.updateSessionTime(token); // atualiza o session time
 
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 			if (!t.getDelete()) {
@@ -124,7 +132,7 @@ public class TaskBean implements Serializable {
 		User u = t.getOwnerTask().getOwnerUser();
 
 		if (u.getUserId() == logedUser.getUserId()) {
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 			appBean.updateSessionTime(token); // atualiza o session time
@@ -140,7 +148,7 @@ public class TaskBean implements Serializable {
 	public ArrayList<HashMap<String, String>> getDeletedTasks(String token) {
 
 		User logUser = userDao.findUserByToken(token);
-		boolean admin = logUser.getAdmin().equals("yes");
+		boolean admin = logUser.getAdmin();
 
 		if (admin) {
 			List<Task> taskList = taskDao.getAllTasks();
@@ -168,7 +176,7 @@ public class TaskBean implements Serializable {
 	public ArrayList<TaskDto> getTaskList(String token, long userId) {
 		User uLoged = userDao.findUserByToken(token);
 		long uLogedId = uLoged.getUserId();
-		boolean admin = uLoged.getAdmin().equals("yes");
+		boolean admin = uLoged.getAdmin();
 
 		if (userId == uLogedId || admin || userId == 0) {
 			if (userId == 0) {
@@ -179,35 +187,47 @@ public class TaskBean implements Serializable {
 			List<Task> userList = getUserTasks(userId);
 			// taskDao.findAll();
 
-			//ArrayList<HashMap<String, String>> taskHash = convertToHask(userList);
-			
+			// ArrayList<HashMap<String, String>> taskHash = convertToHask(userList);
+
 			////////////////////// teste
 			ArrayList<TaskDto> lista = new ArrayList<TaskDto>();
-			
-			for(Task t:userList) {
+
+			for (Task t : userList) {
 				TaskDto element = new TaskDto();
-				
+
 				element.setTitle(t.getTitle());
 				element.setDetails(t.getDetails());
-				
-				Category category=categoryDao.getCategoryById(t.getCategory().getId());
-				String CategoryTitle=category.getTitle();
+
+				Category category = categoryDao.getCategoryById(t.getCategory().getId());
+				String CategoryTitle = category.getTitle();
 				element.setCategoryTitle(CategoryTitle);
-				
+
 				element.setId(t.getId());
 				element.setDone(t.getDone());
 				element.setAlert(t.isAlert());
+
+				System.out.println(element.getTitle());
+
+				element.setFinishTime(t.getFinishTime().format(dateFormatter)); //////
 				
+				element.setDeadline(t.getDeadline().format(dateFormatter));
 				
-				element.setFinishTime_2(t.getFinishTime());
-				element.setDeadline_2(t.getDeadline());
-				element.setCreationDate_2(t.getCreationDate());
-				
-				
-				//TaskDto taskConverted= appBean.convertEntityTaskToDTO(t);
+				element.setCreationDate(t.getCreationDate().format(dateFormatter)); ///////
+				System.out.println("************"+t.getCreationDate());
+				System.out.println("************"+element.getCreationDate());
+
+				element.setStartTime(t.getStartTime().format(dateFormatter));
+				element.setTimeReminder(t.getTimeReminder().format(dateFormatter));
+
+				System.out.println(element.getTitle());
+				System.out.println(element.getStartTime());
+				System.out.println(element.getTimeReminder());
+				System.out.println(element.getDone());
+
+				// TaskDto taskConverted= appBean.convertEntityTaskToDTO(t);
 				lista.add(element);
 			}
-		
+
 			return lista;
 		}
 		return null;
@@ -220,15 +240,14 @@ public class TaskBean implements Serializable {
 		for (Task task : taskList) {
 
 			HashMap<String, String> taskHash = new HashMap<>();
-			taskHash.put("Creation Date", task.getCreationDate());
-			taskHash.put("Deadline", task.getDeadline());
-			taskHash.put("Done", task.getDone());
+			taskHash.put("Creation Date", task.getCreationDate().format(dateFormatter));
+			taskHash.put("Deadline", task.getDeadline().format(dateFormatter));
+			taskHash.put("Done", task.getDone() + "");
 			taskHash.put("Details", task.getDetails());
 			taskHash.put("Category", task.getCategoryTitle());
 			taskHash.put("Title", task.getTitle());
-			String taskId=task.getId()+"";
+			String taskId = task.getId() + "";
 			taskHash.put("Id", taskId);
-			
 
 			ohMyGod.add(taskHash);
 		}
@@ -258,7 +277,7 @@ public class TaskBean implements Serializable {
 
 		if (u.getUserId() == logedUser.getUserId()) {
 
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 
@@ -266,10 +285,14 @@ public class TaskBean implements Serializable {
 
 			t.setTitle(task.getTitle());
 			t.setDetails(task.getDetails());
-			t.setDeadline(task.getDeadline());
+			t.setDeadline(convert_Deadline_ToLocalDateTime(task.getDeadline()));
 			t.setAlert(task.isAlert());
 			t.setDone(task.getDone());
-			t.setCreationDate(task.getCreationDate());
+			
+			if(task.getCreationDate()!=null) {
+			t.setCreationDate(convert_CreationDate_ToLocalDateTime(task.getCreationDate(),t.getCreationDate()));
+			}
+			
 			t.setDelete(task.getDelete());
 
 			if (t.getCategory().getId() != task.getCategoryId()) {
@@ -315,12 +338,12 @@ public class TaskBean implements Serializable {
 		if (t.getOwnerTask().getOwnerUser().getUserId() == userId) {
 			taskData.setTitle(t.getTitle());
 			taskData.setDetails(t.getDetails());
-			taskData.setDeadline(t.getDeadline());
+			taskData.setDeadline(t.getDeadline().format(dateFormatter));
 			// taskData.setCategory(t.getCategory());
 			taskData.setAlert(t.isAlert());
-			taskData.setCreationDate(t.getCreationDate());
+			taskData.setCreationDate(t.getCreationDate().format(dateFormatter));
 			taskData.setDone(t.getDone());
-			taskData.setFinishTime(t.getFinishTime());
+			taskData.setFinishTime(t.getFinishTime().format(dateFormatter));
 
 			return taskData;
 		}
@@ -331,8 +354,9 @@ public class TaskBean implements Serializable {
 // ESPECIFICAÇÃO U5 - adicionar nova tarefa
 	public boolean addTask(TaskDto newTask, String token) {
 		User logedUser = userDao.findUserByToken(token);
+		System.out.println("estou aquiaaa!!!");
 
-		if (logedUser != null && logedUser.getState().equals("ativa")) {
+		if (logedUser != null && logedUser.getState()) {
 
 			Task taskEntity = createTask(newTask, logedUser);
 
@@ -349,24 +373,24 @@ public class TaskBean implements Serializable {
 		return false;
 	}
 
-
 // altera estado da tarefa
 	public boolean updateTaskStatus(long taskId, String token) {
 
 		Task t = taskDao.findTaskById(taskId);
-		SessionLogin session=sessionDao.findSessionByToken(token);
-		User u= session.getSessionOwner();
-		
+		SessionLogin session = sessionDao.findSessionByToken(token);
+		User u = session.getSessionOwner();
+
 		if (t != null) {
-			if (t.getOwnerTask().getOwnerUser().getUserId() == u.getUserId() || u.getAdmin().equals("yes")) {
-				if (t.getDone().equals("no")) {
-					t.setDone("yes");
-					t.createFinishtime();
+			if (t.getOwnerTask().getOwnerUser().getUserId() == u.getUserId() || u.getAdmin()) {
+				if (!t.getDone()) {
+					t.setDone(true);
+					t.setFinishTime(getLocalDateTime_System().withSecond(0));
+					// t.createFinishtime();
 					taskDao.merge(t);
 					return true;
 				} else {
-					t.setDone("no");
-					t.setFinishTime("0");
+					t.setDone(false);
+					t.setFinishTime_null();
 					taskDao.merge(t);
 
 					return true;
@@ -393,8 +417,86 @@ public class TaskBean implements Serializable {
 	}
 
 	public void setSessionDao(SessionDao sessionDao) {
-		this.sessionDao=sessionDao;
-		
+		this.sessionDao = sessionDao;
+
 	}
 
+	public LocalDateTime getLocalDateTime_System() {
+		LocalDateTime timeNow = LocalDateTime.now().withSecond(0);
+		return timeNow;
+	}
+
+	public LocalDateTime convert_CreationDate_ToLocalDateTime(String creationDate, LocalDateTime inicialCreationDate) {
+		LocalDateTime convertedDateTime = null;
+			try {
+				convertedDateTime = LocalDateTime.parse(creationDate, dateFormatter).withSecond(0);
+
+			} catch (DateTimeParseException dateTimeParseException) {
+				System.out.println(dateTimeParseException);
+				System.out.println(
+						"Entrada de Data no Formato incorrecto ou em falta, será mantida a hora definida inicial");
+			convertedDateTime=inicialCreationDate;
+		}
+		return convertedDateTime;
+	}
+
+	public LocalDateTime convert_Deadline_ToLocalDateTime(String deadline) {
+		// deadline opcional. se não for preenchido fica null
+		LocalDateTime convertedDateTime = null;
+		if (deadline != null) {
+			try {
+				convertedDateTime = LocalDateTime.parse(deadline, dateFormatter).withSecond(0);
+			} catch (DateTimeParseException dateTimeParseException) {
+				System.out.println(dateTimeParseException);
+				System.out.println("Entrada de Data no Formato incorrecto ou em falta, será assumida data e hora null");
+			}
+		}
+		return convertedDateTime;
+	}
+
+	public LocalDateTime convert_StartTime_ToLocalDateTime(String startTime) {
+		// startTime opcional. se não for preenchido fica null
+		LocalDateTime convertedDateTime = getLocalDateTime_System().withSecond(0);
+		if (startTime != null) {
+			try {
+				convertedDateTime = LocalDateTime.parse(startTime, dateFormatter).withSecond(0);
+
+			} catch (DateTimeParseException dateTimeParseException) {
+				System.out.println(dateTimeParseException);
+				System.out.println(
+						"Entrada de Data no Formato incorrecto ou em falta, será assumida data e hora do sistema");
+			}
+		}
+		return convertedDateTime;
+	}
+
+	public LocalDateTime convert_TimeReminder_ToLocalDateTime(String date, LocalDateTime deadline) {
+		// se Alert true-> timeReminder opcional. se não for preenchido assume a
+		// Deadline. Se não houver, assume mais uma semana.
+		LocalDateTime convertedDateTime = getLocalDateTime_System().withSecond(0);
+		if (date == null) {
+			if (deadline != null) {
+				convertedDateTime = deadline;
+			} else {
+				convertedDateTime = convertedDateTime.plusDays(7);
+			}
+
+		} else {
+			try {
+				convertedDateTime = LocalDateTime.parse(date, dateFormatter).withSecond(0);
+			} catch (DateTimeParseException dateTimeParseException) {
+				System.out.println(dateTimeParseException);
+				System.out
+						.println("Entrada de Data no Formato incorrecto será assumida a data Deadline ou mais 7 dias");
+
+				if (deadline != null) {
+					convertedDateTime = deadline;
+				} else {
+					convertedDateTime = convertedDateTime.plusDays(7);
+				}
+			}
+
+		}
+		return convertedDateTime;
+	}
 }

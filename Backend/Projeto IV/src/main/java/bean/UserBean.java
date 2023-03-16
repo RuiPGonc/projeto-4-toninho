@@ -62,7 +62,7 @@ public class UserBean implements Serializable {
 		String photoUrl = novoAdmin.getPhotoUrl();
 		User userEntity = new User(username, userId, pass, firstName, lastName, email, phone, photoUrl);
 		userDao.persistNewUser(userEntity);
-		userEntity.setAdmin("yes");
+		userEntity.setAdmin(true);
 		userDao.merge(userEntity);
 
 Category createCategory = new Category("Categoria 1", userEntity);
@@ -157,7 +157,7 @@ categoryDao.persistNewCategory(createCategory);
 	public boolean addUser(UserDto newUser, String password, String token) {
 
 		User u = userDao.findUserByToken(token);
-		boolean admin = u.getAdmin().equals("yes");
+		boolean admin = u.getAdmin();
 
 		if (admin) {
 
@@ -197,18 +197,18 @@ categoryDao.persistNewCategory(createCategory);
 
 		appBean.updateSessionTime(token); // atualiza o session time
 
-		if (user.getState().equals("inativa")) {
+		if (!user.getState()) {
 			return false;
 		}
-		if (userLog.getAdmin().equals("yes")) {
+		if (userLog.getAdmin()) {
 
-			if (user.getAdmin().equals("yes")) {
-				user.setAdmin("no");
+			if (user.getAdmin()) {
+				user.setAdmin(false);
 				userDao.merge(user);
 				return true;
 
-			} else if (user.getAdmin().equals("no")) {
-				user.setAdmin("yes");
+			} else if (!user.getAdmin()) {
+				user.setAdmin(true);
 				userDao.merge(user);
 				return true;
 			}
@@ -225,7 +225,7 @@ categoryDao.persistNewCategory(createCategory);
 		String email = u.getEmail();
 		String phone = u.getPhone();
 		String photoUrl = u.getPhotoUrl();
-		String admin = u.getAdmin();
+		boolean admin = u.getAdmin();
 
 		System.out.println("userId- " + userId + "\nusername -" + username + "\n pass -" + pass + "\n firstName -"
 				+ firstName + "\n lastName -" + lastName + "\n email -" + email + "\n phone -" + phone + "\n photoUrl -"
@@ -237,7 +237,7 @@ categoryDao.persistNewCategory(createCategory);
 	public ArrayList<UserDto> getAllUsersList(String token) {
 
 		User u = userDao.findUserByToken(token);
-		boolean admin = u.getAdmin().equals("yes");
+		boolean admin = u.getAdmin();
 
 		if (admin) { // somente se o user for admin é que tem permissões
 
@@ -266,7 +266,7 @@ categoryDao.persistNewCategory(createCategory);
 
 	public ArrayList<UserDto> getAllAdmins(String token, String AdminCredentials) {
 		User u = userDao.findUserByToken(token);
-		boolean admin = u.getAdmin().equals("yes");
+		boolean admin = u.getAdmin();
 
 		if (admin) {
 			appBean.updateSessionTime(token); // atualiza o session time
@@ -293,7 +293,7 @@ categoryDao.persistNewCategory(createCategory);
 	public UserDto getUserProfile(String token, long userId) {
 		User uLoged = userDao.findUserByToken(token);
 		long uLogedId = uLoged.getUserId();
-		boolean admin = uLoged.getAdmin().equals("yes");
+		boolean admin = uLoged.getAdmin();
 
 		System.out.println(userId);
 		if (userId == uLogedId || admin || userId == 0) { // se o id do user que solicita a edição for igual ao id do
@@ -330,7 +330,7 @@ categoryDao.persistNewCategory(createCategory);
 
 		User uLoged = userDao.findUserByToken(token);
 		long uLogedId = uLoged.getUserId();
-		boolean admin = uLoged.getAdmin().equals("yes");
+		boolean admin = uLoged.getAdmin();
 
 		User userEdited = getUserProfileById(userId);
 
@@ -340,7 +340,7 @@ categoryDao.persistNewCategory(createCategory);
 			if (userId == 0) {
 				u = uLoged;
 			}
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 			appBean.updateSessionTime(token); // atualiza o session time
@@ -384,7 +384,7 @@ categoryDao.persistNewCategory(createCategory);
 
 			appBean.updateSessionTime(token); // atualiza o session time
 
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 			if (userCategoryList != null) {
@@ -410,7 +410,7 @@ categoryDao.persistNewCategory(createCategory);
 
 		if (c != null) {
 			c.setDeletedCategory(true);
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 			List<Task> tasks = c.getUserTaskList();
@@ -447,7 +447,7 @@ categoryDao.persistNewCategory(createCategory);
 			Category removeCategory = getCategory(categoryId, u.getUserId());
 
 			appBean.updateSessionTime(token); // atualiza o session time
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 			if (removeCategory.isDeletedCategory()) {
@@ -473,7 +473,7 @@ categoryDao.persistNewCategory(createCategory);
 	public boolean removeUser(String token, long userId) {
 		User userAdmin = userDao.findUserByToken(token);
 		long uLogedId = userAdmin.getUserId();
-		boolean admin = userAdmin.getAdmin().equals("yes");
+		boolean admin = userAdmin.getAdmin();
 
 		User deletedUser = userDao.getUserById(userId);
 		User u = deletedUser;
@@ -485,11 +485,11 @@ categoryDao.persistNewCategory(createCategory);
 
 			appBean.updateSessionTime(token); // atualiza o session time
 
-			boolean UserState = u.getState().equals("ativa");
+			boolean UserState = u.getState();
 
 			if (UserState) {
 				removeUserActivity(deletedUser);
-				deletedUser.setState("inativa");
+				deletedUser.setState(false);
 				userDao.merge(deletedUser);
 				return true;
 			}
@@ -536,7 +536,7 @@ categoryDao.persistNewCategory(createCategory);
 			if (userId == 0) {
 				u = uLoged;
 			}
-			if (u.getState().equals("inativa")) {
+			if (!u.getState()) {
 				return false;
 			}
 			appBean.updateSessionTime(token); // atualiza o session time
@@ -575,7 +575,7 @@ categoryDao.persistNewCategory(createCategory);
 	public ArrayList<CategoryDto> getCategories(String token, long userId) {
 			User uLoged = userDao.findUserByToken(token);
 			long uLogedId = uLoged.getUserId();
-			boolean admin = uLoged.getAdmin().equals("yes");
+			boolean admin = uLoged.getAdmin();
 
 			if (userId == uLogedId || admin || userId == 0) {
 				if (userId == 0) {

@@ -5,9 +5,9 @@ public class TokenDto {
 	private String token;
 	private String status;
 	private long userId;
-	private String adminCredentials;
+	private boolean adminCredentials;
 	
-	public TokenDto(String status, String token,long userId,String adminCredentials) {
+	public TokenDto(String status, String token,long userId,boolean adminCredentials) {
 		this.token=token;
 		this.status=status;
 		this.userId=userId;
@@ -36,10 +36,10 @@ public class TokenDto {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
-	public String getAdminCredentials() {
+	public boolean getAdminCredentials() {
 		return adminCredentials;
 	}
-	public void setAdminCredentials(String adminCredentials) {
+	public void setAdminCredentials(boolean adminCredentials) {
 		this.adminCredentials = adminCredentials;
 	}
 	

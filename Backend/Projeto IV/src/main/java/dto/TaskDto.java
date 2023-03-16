@@ -6,10 +6,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import com.mysql.cj.x.protobuf.MysqlxPrepare.Deallocate;
+
 import dao.CategoryDao;
 import jakarta.ejb.EJB;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.xml.bind.annotation.XmlElement;
+import net.bytebuddy.implementation.MethodCall.WithoutSpecifiedTarget;
 
 public class TaskDto{
 
@@ -22,102 +25,75 @@ CategoryDao categoryDao;
 	@XmlElement
 	private String details;
 	@XmlElement
-	@JsonbDateFormat("dd/MM/yyyy HH:mm")
-	private LocalDateTime deadline;
+	private long categoryId; 
 	@XmlElement
-	private long categoryId; // a taskDto tem CategoryId, a Task tem CategoryTitle e Category ownerTask,
-							// porque é a Task que pressite na BD
 	private String categoryTitle;
 	@XmlElement
 	private long id;
 	@XmlElement
-	private String done = "no";
+	private boolean alert;
 	@XmlElement
-	@JsonbDateFormat("dd/MM/yyyy HH:mm")
-	private LocalDateTime creationDate;
+	private boolean done;
 	@XmlElement
-	private boolean alert = false;
+	private String deadline;
 	@XmlElement
-	@JsonbDateFormat("dd/MM/yyyy HH:mm")
-	private LocalDateTime finishTime;
+	private String startTime;
+	@XmlElement
+	private String timeReminder;
 	@XmlElement
 	private boolean delete = false;
 	@XmlElement
-	private long timeReminder;
-
+	private String creationDate;
+	@XmlElement
+	private String finishTime;
+	
 	// CONSTRUTORES
 	public TaskDto() {
 	}
 
-	public TaskDto(String title, String details, String deadline, long categoryId, long id, String creationDate,
-			boolean alert, long timeReminder) {
+	public TaskDto(String title, String details, String deadline, long categoryId, long id,
+			boolean alert, String timeReminder,boolean done, String startTime) {
+		//campos obrigatório
 		this.title = title;
-		this.details = details;
-
 		this.categoryId = categoryId;
 		this.id = id;
-		this.alert = alert;
+		this.done=done;
+		this.alert = alert;	
 		this.timeReminder=timeReminder;
-
-		if (creationDate == null) {
-			this.creationDate = createDate();
-		} else {
-			this.creationDate = convertToLocalDateTime(creationDate);
-		}
-
-		if (deadline == "0") {
-			this.deadline = createDate();
-			this.deadline.plusDays(7);// por default se o User não definir data deadline mas definir Alert como true o
-										// deadline é definido para uma semana depois
-		} else {
-			this.deadline = convertToLocalDateTime(deadline);
-		}
-
-		if(alert && timeReminder==0) {
-			this.timeReminder=10080;  //10 080 => minutos = 7 dias * 24h*60min
-		}
+		this.details = details;
+		
+		//campos facultativos
+		if(startTime!="" && startTime!=null) {
+			this.startTime=startTime;}
+		if (deadline != "" || deadline!=null) {
+			this.deadline = deadline;}
+		
 	}
 	
 	
-	
+
 	//Para teste
 	public TaskDto(String title, String details, String deadline, long categoryId, String creationDate,
 			boolean alert, long timeReminder) {	}
 
-	public LocalDateTime convertToLocalDateTime(String creationDate) {
-
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-		String dateTrim = creationDate.replaceAll("\\s", "");
-
-		String date = dateTrim.substring(0, 10); // primeira substring (data)
-		String time = dateTrim.substring(10); // segunda substring (hora)
-
-		LocalDate dateLocalDate = LocalDate.parse(date, dateFormatter);
-		LocalDateTime dateTime;
-		if (time == "") {
-			dateTime = dateLocalDate.atTime(0, 0);
-
-		} else {
-			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:MM");
-			LocalTime localTime = LocalTime.parse(time, timeFormatter);
-			dateTime = dateLocalDate.atTime(localTime);
-		}
-
-		return dateTime;
+	public String getTimeReminder() {
+		return this.timeReminder;
 	}
 
-	public Duration getTimeReminder() {
-		Duration time= Duration.ofMinutes(this.timeReminder);
-		return time;
-	}
-
-	public void setTimeReminder(long timeReminder) {
-		this.timeReminder = timeReminder;
+	public void setTimeReminder(String timeReminder) {
+		this.timeReminder=timeReminder;
 	}
 
 	public String getCreationDate() {
-		return creationDate.toString();
+		return creationDate;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
 	}
 
 	public String getCategoryTitle() {
@@ -125,41 +101,19 @@ CategoryDao categoryDao;
 	}
 
 	public void setCategoryTitle(String categoryTitle) {
-		//entity.Category category= categoryDao.getCategoryById(CategoryId);
 		this.categoryTitle = categoryTitle;
 	}
 
-	public LocalDateTime createDate() {
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-		LocalDateTime todayDate = LocalDate.now().atTime(0, 1);
-		return todayDate;
-	}
-
-	public LocalDateTime getFinishTime() {
+	public String getFinishTime() {
 		return finishTime;
 	}
 
 	public void setFinishTime(String time) {
-		System.out.println("**************finishTime  1*******************"+time);
-		if(!time.equals("0"))
-			this.finishTime = convertToLocalDateTime(time);
-	}
-	public void setFinishTime_2(String time) {
-		System.out.println("**************finishTime  2*******************"+time);
-		if(!time.equals("0"))
-			this.finishTime = LocalDateTime.parse(time);
-
+		this.finishTime=time;
 	}
 
 	public void setCreationDate(String time) {
-		System.out.println("*******creationTime 1*************************"+time);
-		this.creationDate= convertToLocalDateTime(time);
-	}
-	public void setCreationDate_2(String time) {
-		System.out.println("*******creationTime 2*************************"+time);
-		this.creationDate= LocalDateTime.parse(time);
-		
+		this.creationDate=time;
 	}
 
 	public boolean getDelete() {
@@ -195,20 +149,11 @@ CategoryDao categoryDao;
 	}
 
 	public String getDeadline() {
-		return deadline.toString();
+		return deadline;
 	}
 
 	public void setDeadline(String time) {
-		System.out.println("**************Deadline*******************"+time);
-
-		if(time=="")time="0";
-		this.deadline =convertToLocalDateTime(time);
-	}
-	public void setDeadline_2(String time) {
-		System.out.println("**************Deadline*******************"+time);
-
-		if(time=="")time="0";
-		this.deadline = LocalDateTime.parse(time);
+		this.deadline=time;
 	}
 
 	public long getCategoryId() {
@@ -223,31 +168,17 @@ CategoryDao categoryDao;
 		return id;
 	}
 
-	public long createId() {
-
-		long time = System.currentTimeMillis();
-		String timeString = time + "";
-		// this.id = timeString;
-		return id;
-	}
-
 	public void setId(long id) {
 		this.id = id;
 	}
 
-	public String getDone() {
+	public boolean getDone() {
 		return done;
 	}
 
-	public void setDone(String done) {
+	public void setDone(boolean done) {
 		this.done = done;
 	}
 
-	public LocalDateTime createFinishtime() {
-		long time = System.currentTimeMillis();
-		String timeString = time + "";
-		LocalDateTime finishTimeLocalDate = convertToLocalDateTime(timeString);
-		return finishTimeLocalDate;
-	}
 
 }
