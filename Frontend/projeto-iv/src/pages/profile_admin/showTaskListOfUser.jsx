@@ -53,15 +53,17 @@ function Activity_of_User() {
               </tr>
             </thead>
             <tbody>
-              {myactivities.map((task) => (
-                <tr key={task.id}>
-                  <td>{task.id}</td>
-                  <td>{task.title}</td>
-                  <td>{task.categoryTitle}</td>
-                  <td>{task.details}</td>
-                  <td>{task.done ? "yes" : "no"}</td>
-                </tr>
-              ))}
+              {myactivities
+                ? myactivities.map((task) => (
+                    <tr key={task.id}>
+                      <td>{task.id}</td>
+                      <td>{task.title}</td>
+                      <td>{task.categoryTitle}</td>
+                      <td>{task.details}</td>
+                      <td>{task.done ? "yes" : "no"}</td>
+                    </tr>
+                  ))
+                : null}
             </tbody>
           </table>
         </div>

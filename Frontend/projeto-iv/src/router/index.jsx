@@ -25,7 +25,7 @@ function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/newTask" element={<NewTask />} />
         <Route path="/users" element={<Users />} />
-        <Route path="/profile_admin" element={<Profile_admin />} />
+        <Route path="/profile_admin/:userId" element={<Profile_admin />} />
       </Routes>
     </Router>
   );

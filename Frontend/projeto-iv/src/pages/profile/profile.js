@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/navbar/Sidebar";
 import { useNavigate } from "react-router-dom";
 
-import { AppContext } from "../../router/index";
 import { useStore } from "../../store/userStore";
 import HomePageButton from "../../components/generics/goHome";
 import Input from "../../components/form/input";
@@ -10,7 +9,6 @@ import SubmitButton from "../../components/generics/btnSubmit";
 import { getUserInfo, updateUserInfo } from "./actions";
 
 function Profile() {
-  //const{credentials}=useContext(AppContext);
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
   const [userInfo, setUserInfo] = useState([]);
@@ -65,7 +63,7 @@ function Profile() {
             <p>account state:{userInfo.state}</p>
           </div>
           <div>
-            <p>Photo:{userInfo.photo}</p>
+            <p>Photo:{userInfo.photoUrl}</p>
           </div>
         </div>
         <form onSubmit={handleSubmit}>

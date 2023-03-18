@@ -8,7 +8,6 @@ const initialState = {
   userId: "",
   token: "",
   adminCredentials: "",
-  editedUserId: "",
 };
 
 //define the store
@@ -20,7 +19,6 @@ export const useStore = create(
       updateUserId: (userId) => set({ userId }),
       updateToken: (token) => set({ token }),
       updateAdminCredentials: (adminCredentials) => set({ adminCredentials }),
-      updateEditedUserId: (editedUserId) => set({ editedUserId }),
       logout: async (token, callback) => {
         backendLogout(token)
           .then(() => {

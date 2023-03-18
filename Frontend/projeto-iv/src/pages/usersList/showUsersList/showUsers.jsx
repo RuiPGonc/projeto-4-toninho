@@ -17,9 +17,19 @@ function ShowUsers(admins) {
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const navigate = useNavigate();
 
-  const updateEditedUserId = useStore((state) => state.updateEditedUserId);
-
   //const userId = useStore((state) => state.userId);
+
+  const updateUsers = () => {
+    if (admins === true) {
+      getAdmins(token).then((response) => {
+        setAllUsers(response);
+      });
+    } else {
+      getUsers(token).then((response) => {
+        setAllUsers(response);
+      });
+    }
+  };
 
   //obter a lista de todos os Users
   useEffect(() => {
@@ -34,15 +44,11 @@ function ShowUsers(admins) {
     }
   }, []);
 
-  const changeRole = async (event) => {
-    event.preventDefault();
-
-    const id = event.target.name;
-
-    await changeUserRole(token, id);
-    //como renderizar o código após mudar o Role?
-    //setAllUsers(allUsers)
+  const changeRole = async (userId) => {
+    await changeUserRole(token, userId);
+    updateUsers();
   };
+
   function handleDeleteUser(event, id) {
     event.preventDefault();
     setUserIdToDelete(id);
@@ -56,17 +62,13 @@ function ShowUsers(admins) {
   async function handleConfirm() {
     // Lógica para confirmar o delete do user->Fetch
     await deleteUser(token, userIdToDelete);
+    updateUsers();
     setShowConfirmBox(false);
     setUserIdToDelete(null);
   }
 
-  const handleEditUserProfile = (event) => {
-    event.preventDefault();
-    console.log(event.target.name);
-    const UserId_to_edit = event.target.name;
-    console.log(UserId_to_edit);
-    updateEditedUserId(UserId_to_edit);
-    navigate("/profile_admin", { replace: true });
+  const handleEditUserProfile = (id) => {
+    navigate(`/profile_admin/${id}`);
   };
 
   return (
@@ -93,12 +95,15 @@ function ShowUsers(admins) {
             </span>
             <div id="btn-edit-users-by-adim">
               <div>
-                <BtnChangeRole name={user.userId} onClick={changeRole} />
+                <BtnChangeRole
+                  name={user.userId}
+                  onClick={() => changeRole(user.userId)}
+                />
               </div>
               <div>
                 <BtnEditProfile
                   name={user.userId}
-                  onClick={(event) => handleEditUserProfile(event, user.userId)}
+                  onClick={() => handleEditUserProfile(user.userId)}
                 />
               </div>
               <div>

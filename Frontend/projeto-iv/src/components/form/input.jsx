@@ -18,8 +18,7 @@ export default function Input({
         id={name}
         placeholder={placeholder}
         onChange={handleOnChange}
-        value={value}
-        defaultValue={defaultValue}
+        value={value || defaultValue}
       />
     </div>
   );
