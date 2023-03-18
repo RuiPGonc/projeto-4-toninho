@@ -29,10 +29,10 @@ export default function NewTask() {
   const [timeReminderStyle, setShowTimeRimender] = useState(false);
   //definição do startTime
   const [startTime, setStartTime] = useState(getCurrentDateTime());
-  //definição de objeto para guardar datas
-  const [dateObject, setDates] = useState([]);
+  const [deadlineTime, setDeadlineTime] = useState();
+  const [timeReminder, setTimeReminder] = useState();
   //variável para o Id da Categoria
-  const [categoryId, setCategory] = useState(categoryId);
+  const [categoryId, setCategory] = useState();
 
   //obter a lsita de categorias do User
   useEffect(() => {
@@ -48,10 +48,6 @@ export default function NewTask() {
     }
   }, [userId]);
 
-  //obter o id da Categoria
-  const handleCategory = (event) => {
-    setCategory(() => ({ ["categoryId"]: event.target.value }));
-  };
   //construção do objeto Inputs
   const handleChange = (event) => {
     const name = event.target.name;
@@ -77,16 +73,6 @@ export default function NewTask() {
     sertReminderValue(event.target.value);
   };*/
 
-  //construção do objeto data
-  const handleChangeDates = (event) => {
-    const name = event.target.name;
-    const date = event.target.valueAsDate;
-    const dateTime = dateTime_format(date);
-
-    setDates((values) => ({ ...values, [name]: dateTime }));
-    console.log(dateTime);
-  };
-
   //chamada do Fetch
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -105,21 +91,41 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
       return;
     }
 */
-    const object_Task = await setObject_to_Fetch(
+
+    console.log(
+      "Submit",
       inputs,
-      categoryId,
-      dateObject,
+      { categoryId: categoryId },
+      {
+        deadlineTime,
+        timeReminder,
+        startTime,
+      },
       timeReminderStyle,
       doneValue
     );
 
-    createNewTask(token, object_Task).then((response) => {
-      if (response === "ok") {
-        console.log("Sucess!");
-        // navigate("/login", { replace: true });
-      }
-    });
+    // const object_Task = await setObject_to_Fetch(
+    //   inputs,
+    //   { categoryId },
+    //   {
+    //     deadlineTime,
+    //     timeReminder,
+    //     startTime,
+    //   },
+    //   timeReminderStyle,
+    //   doneValue
+    // );
+
+    // createNewTask(token, object_Task).then((response) => {
+    //   if (response === "ok") {
+    //     console.log("Sucess!");
+    //     // navigate("/login", { replace: true });
+    //   }
+    // });
   };
+
+  console.log({ categoryId, myCategories });
 
   return (
     <div className="Register" id="register-form">
@@ -131,7 +137,7 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
           type="text"
           text="Title"
           name="title"
-          defaultValue=""
+          value={inputs.title}
           handleOnChange={handleChange}
           required
         />
@@ -139,55 +145,58 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
           type="text"
           text="Details"
           name="details"
-          defaultValue=""
+          value={inputs.details}
           handleOnChange={handleChange}
         />
         <Select
           name="categoryId"
           text="Select a Category"
           options={myCategories}
-          handleOnChange={handleCategory}
-          value={categoryId || ""}
+          handleOnChange={(e) => setCategory(e.target.value)}
+          value={{ categoryId }}
           required
         />
         <Input
           type="datetime-local"
           text="Start Date"
           name="startTime"
-          defaultValue={startTime || getCurrentDateTime()}
-          handleOnChange={handleChangeDates}
+          value={startTime}
+          handleOnChange={(e) => setStartTime(e.target.value)}
           required
         />
         <Input
           type="datetime-local"
           text="deadline Date"
           name="deadlineTime"
-          handleOnChange={handleChangeDates}
+          value={deadlineTime}
+          handleOnChange={(e) => setDeadlineTime(e.target.value)}
         />
-      </form>
-      <div id="Alert_div">
-        <SwitchButton
-          label="Alert"
-          value={alertValue}
-          handleSwitchChange={showTimeReminderInput}
-        />
-        {timeReminderStyle && (
-          <input
-            id="timeReminder"
-            type="datetime-local"
-            name="timeReminder"
-            value={reminderValue}
-            onChange={handleChangeDates}
+        <div id="Alert_div">
+          <SwitchButton
+            label="Alert"
+            value={alertValue}
+            handleSwitchChange={showTimeReminderInput}
           />
-        )}
-        <SwitchButton
-          label="Done"
-          value={doneValue}
-          handleSwitchChange={handleDonebtn}
-        />
+          {timeReminderStyle && (
+            <input
+              id="timeReminder"
+              type="datetime-local"
+              name="timeReminder"
+              value={timeReminder}
+              handleOnChange={(e) => setTimeReminder(e.target.value)}
+            />
+          )}
+          <SwitchButton
+            label="Done"
+            value={doneValue}
+            handleSwitchChange={handleDonebtn}
+          />
+        </div>
+        <button type="submit">Create task</button>
+      </form>
+      <div>
+        <HomePageButton />
       </div>
-      <SubmitButton text="Create Task" onClick={handleSubmit} />
-      <div>{HomePageButton()}</div>
     </div>
   );
 }
