@@ -1,42 +1,63 @@
-import React, {useState} from 'react';
+import moment from "moment";
 import getCurrentDateTime from "../../components/generics/systemDateTime";
-import moment from 'react'
+import dateTime_format from "../../components/generics/dateTimeFormated";
 
-export default function setObject_to_Fetch(title_Detail,categoryId,times,alert,done){
-//const [systemTime, setStartTime] = useState(getCurrentDateTime());
 
-//se a tarefa foi concluida envia-se a data do sistema como finishTime -> backend
-/*if(done){
-    const finishTime=systemTime
-    done={
-        ...done,
-        ...finishTime
-    }
-}*/
+export default function setObject_to_Fetch(
+  title_Detail,
+  categoryId,
+  times,
+  alert,
+  done
+) {
+    
+  const task = {
+    title: title_Detail.title,
+    categoryId: categoryId.categoryId,
+    details: title_Detail.details,
+    alert: alert,
+    done: done,
+    deadline: times.deadlineTime,
+    startTime: times.startTime,
+    timeReminder: times.timeReminder,
+  };
+  console.log(task);
 
-    const task={
-             ...title_Detail, 
-             ...categoryId,
-             ...times,
-             ...alert,
-             ...done
-      };
+  //validação de valores do tipo "undefined"
+  if (typeof task.details === "undefined") {
+    task.details = null;
+  }
+  if (typeof task.deadline === "undefined") {
+    task.deadline = null;
+  }
+  if (typeof task.startTime === "undefined") {
+    task.startTime = dateTime_format(getCurrentDateTime());
 
-//validações de dados
-const start_Time= moment(times.startTime);
-const deadline_= moment(times.deadline);
-const time_Reminder= moment(times.timeReminder);
+  }
+  if (typeof task.timeReminder === "undefined") {
+    task.timeReminder = null;
+  }
+  console.log(task);
 
-if(deadline_.isBefore(start_Time)){
-   console.log("deadline definido para uma data anterior à data de inicio")
-   task=[""];
-}else if(time_Reminder.isAfter(deadline_)){
-    console.log("ReminterTime definido para uma data posterior à data deadline")
-    task=[""];
-}else if(time_Reminder.isBefore(start_Time)){
-    console.log("ReminterTime definido para uma data anterior à data de inicio")
-    task=[""];
-}
+  //validações de dados
+  const start_Time = moment(times.startTime);
+  const deadline_ = moment(times.deadline);
+  const time_Reminder = moment(times.timeReminder);
 
-return task
+  if (deadline_.isBefore(start_Time)) {
+    console.log("deadline definido para uma data anterior à data de inicio");
+    task = {};
+  } else if (time_Reminder.isAfter(deadline_)) {
+    console.log(
+      "ReminderTime definido para uma data posterior à data deadline"
+    );
+    task = {};
+  } else if (time_Reminder.isBefore(start_Time)) {
+    console.log(
+      "ReminderTime definido para uma data anterior à data de inicio"
+    );
+    task = {};
+  }
+
+  return task;
 }

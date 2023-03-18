@@ -13,6 +13,8 @@ export const useStore = create(
       updateToken: (token) => set({ token }),
       adminCredentials: "",
       updateAdminCredentials: (adminCredentials) => set({ adminCredentials }),
+      editedUserId: "",
+      updateEditedUserId: (editedUserId) => set({ editedUserId }),
     }),
     {
       name: "my-store", //nome usado para os presisted data

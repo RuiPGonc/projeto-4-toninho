@@ -10,6 +10,8 @@ import { getUserCategoryList, createNewTask } from "./actions";
 import SwitchButton from "./components/switchButton";
 import getCurrentDateTime from "../../components/generics/systemDateTime";
 import setObject_to_Fetch from "./objectNewTask";
+import dateTime_format from "../../components/generics/dateTimeFormated";
+import HomePageButton from "../../components/generics/goHome"
 
 export default function NewTask() {
   const { isLogin } = useContext(AppContext);
@@ -18,9 +20,9 @@ export default function NewTask() {
   const userId = useStore((state) => state.userId);
   const [inputs, setInputs] = useState({});
   //btn Alert
-  let [alertValue, setalertValue] = useState(false);
+  let [alertValue, setAlertValue] = useState(false);
   //input Reminder
-  let [reminderValue, sertReminderValue] = useState(false);
+  let [reminderValue, setReminderValue] = useState(false);
   //btn switch Done
   let [doneValue, setDoneValue] = useState(false);
   const [myCategories, setCategories] = useState([]);
@@ -31,13 +33,12 @@ export default function NewTask() {
   //definição de objeto para guardar datas
   const [dateObject, setDates] = useState([]);
   //variável para o Id da Categoria
-  const[categoryId,setCategory]=useState("");
+  const[categoryId,setCategory]=useState(categoryId);
 
   //obter a lsita de categorias do User
   useEffect(() => {
     getUserCategoryList(userId, token).then((response) => {
       setCategories(response);
-      console.log(response.id)
     });
   }, []);
   //se não estiver logado é redirecionado para a pagina de login
@@ -47,15 +48,11 @@ export default function NewTask() {
     }
   }, [isLogin]);
 
-  const goHome = async (event) => {
-    event.preventDefault();
-    navigate("/home", { replace: true });
-  };
-
+ 
 
   //obter o id da Categoria
   const handleCategory = (event) =>{
-    setCategory(event.target.value);
+    setCategory(()=>({['categoryId']:event.target.value}));
   }
   //construção do objeto Inputs
   const handleChange = (event) => {
@@ -67,7 +64,7 @@ export default function NewTask() {
   //componente Time Reminder
   const showTimeReminderInput = () => {
     setShowTimeRimender(!timeReminderStyle);
-    setalertValue(!alertValue);
+    setAlertValue(!alertValue);
   };
   //componente Done
   const handleDonebtn = () => {
@@ -85,14 +82,32 @@ export default function NewTask() {
   //construção do objeto data
   const handleChangeDates = (event) => {
     const name = event.target.name;
-    const value = event.target.value;
-    setDates((values) => ({ ...values, [name]: value }));
+    const date = event.target.valueAsDate;
+    const dateTime =dateTime_format(date) ;
+
+    setDates((values) => ({ ...values, [name]: dateTime }));
+    console.log(dateTime)
   };
 
   //chamada do Fetch
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const object_Task = setObject_to_Fetch(
+    /*fazer estas validações noutra página
+os ifs abaixo obrigam a que a data e hora seja bem preenchida
+    if ( !dateObject.startTime || isNaN(dateObject.startTime.getTime())) {
+      alert("Por favor, preencha a data e hora de início corretamente.");
+      return;
+    }
+    if ( !dateObject.deadlineTime || isNaN(dateObject.deadlineTime.getTime())) {
+      alert("Por favor, preencha a data e hora de final corretamente.");
+      return;
+    }
+    if ( !dateObject.timeReminder || isNaN(dateObject.timeReminder.getTime())) {
+      alert("Por favor, preencha a data e hora do Alarme corretamente.");
+      return;
+    }
+*/
+    const object_Task = await setObject_to_Fetch(
       inputs,
       categoryId,
       dateObject,
@@ -100,7 +115,7 @@ export default function NewTask() {
       doneValue
     );
 
-    createNewTask(userId, token, object_Task).then((response) => {
+   createNewTask(token, object_Task).then((response) => {
       if (response === "ok") {
         console.log("Sucess!");
         // navigate("/login", { replace: true });
@@ -118,7 +133,7 @@ export default function NewTask() {
           type="text"
           text="Title"
           name="title"
-          defaultValue=""
+          defaultValue=""        
           handleOnChange={handleChange}
           required
         />
@@ -126,21 +141,22 @@ export default function NewTask() {
           type="text"
           text="Details"
           name="details"
-          defaultValue=""
+          defaultValue=""   
           handleOnChange={handleChange}
         />
         <Select
           name="categoryId"
-          text="Select one Category"
+          text="Select a Category"
           options={myCategories}
           handleOnChange={handleCategory}
+          value = {categoryId || ""}
           required
         />
         <Input
           type="datetime-local"
           text="Start Date"
           name="startTime"
-          defaultValue={startTime}
+          defaultValue={startTime || getCurrentDateTime()}
           handleOnChange={handleChangeDates}
           required
         />
@@ -173,7 +189,9 @@ export default function NewTask() {
         />
       </div>
       <SubmitButton text="Create Task" onClick={handleSubmit} />
-      <SubmitButton text="back" onClick={goHome} />
+     <div>
+    {HomePageButton()}
+     </div>
     </div>
   );
 }

@@ -54,13 +54,17 @@ public class TaskBean implements Serializable {
 //	System.out.println("deadline"+deadline);
 		LocalDateTime deadline = convert_Deadline_ToLocalDateTime(newTask.getDeadline());
 		boolean alert = newTask.isAlert();
-		LocalDateTime timeReminder = convert_TimeReminder_ToLocalDateTime(newTask.getTimeReminder(), deadline);
+		LocalDateTime timeReminder=null;
+		if(alert) {
+			timeReminder = convert_TimeReminder_ToLocalDateTime(newTask.getTimeReminder(), deadline);
+		}
 //System.out.println("timeReminder "+ timeReminder);
 		LocalDateTime startTime = convert_StartTime_ToLocalDateTime(newTask.getStartTime());
 //	System.out.println("startTime "+startTime);
 		boolean done = newTask.getDone();
 		LocalDateTime finishTime = null;
 		if (done) {
+			
 			finishTime = getLocalDateTime_System().withSecond(0);
 		}
 		long id = newTask.getId();
@@ -205,19 +209,27 @@ public class TaskBean implements Serializable {
 				element.setId(t.getId());
 				element.setDone(t.getDone());
 				element.setAlert(t.isAlert());
-
-				System.out.println(element.getTitle());
-
+				if(element.getDone()) {
 				element.setFinishTime(t.getFinishTime().format(dateFormatter)); //////
+				System.out.println(element.getFinishTime());}
 				
+				System.out.println("imprime o Deadline    - "+t.getDeadline());
+				if(t.getDeadline()!=null){
 				element.setDeadline(t.getDeadline().format(dateFormatter));
+				System.out.println("imprime o Deadline2    - "+element.getDeadline());
+				}
 				
 				element.setCreationDate(t.getCreationDate().format(dateFormatter)); ///////
 				System.out.println("************"+t.getCreationDate());
 				System.out.println("************"+element.getCreationDate());
 
 				element.setStartTime(t.getStartTime().format(dateFormatter));
+				
+				System.out.println("imprime o Time Reminder    - "+t.getTimeReminder());
+				if(t.getTimeReminder()!=null){
 				element.setTimeReminder(t.getTimeReminder().format(dateFormatter));
+				System.out.println("imprime o Time Reminder2  - "+element.getTimeReminder());
+				}
 
 				System.out.println(element.getTitle());
 				System.out.println(element.getStartTime());

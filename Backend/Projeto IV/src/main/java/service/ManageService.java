@@ -220,7 +220,6 @@ public class ManageService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addTask(TaskDto a, @HeaderParam("token") String token) {
 
-System.out.println("jão sei como pegar nisto!");
 
 		String authenticateUser = appManage.authenticateUser(token);
 

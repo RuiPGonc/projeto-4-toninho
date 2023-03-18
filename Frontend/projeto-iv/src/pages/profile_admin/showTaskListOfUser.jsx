@@ -1,29 +1,24 @@
 import React from "react";
 import Sidebar from "../../components/navbar/Sidebar";
 import { useState, useEffect, useContext } from "react";
-import "./activity.css";
 import { useNavigate } from "react-router-dom";
 
 import { AppContext } from "../../router/index";
 
-import { getUserTaskList, newTask } from "./actions";
+import { BtnDelete } from "../../components/generics/btnDelete";
+import { getUserTaskList } from "../showTaskList/actions";
 import { useStore } from "../../store/userStore";
-import CheckBox from "../../components/generics/chqbox";
-import BtnDelete from "../../components/generics/btnDelete"
-import BtnEdit from "../../components/generics/btnEdit"
 
-function Activity() {
+function Activity_of_User() {
   const [myactivities, setActivities] = useState([]);
-  //const [inputs, setInputs] = useState({});
 
   const { isLogin } = useContext(AppContext);
-  //const { credentials } = useContext(AppContext);
   const navigate = useNavigate();
 
   //const username=useStore((state)=>state.username);
   const userId = useStore((state) => state.userId);
   const token = useStore((state) => state.token);
-  // const userIDEdited = useStore((state) => state.editedUserId);
+ const userIDEdited = useStore((state) => state.editedUserId);
 
   //se não estiver logado é redirecionado para a pagina de login
   useEffect(() => {
@@ -32,37 +27,24 @@ function Activity() {
     }
   }, [isLogin]);
 
+
   useEffect(() => {
-    console.log(userId);
-    getUserTaskList(userId, token).then((response) => {
+  console.log("userIDEdited da storage "+userIDEdited)
+    getUserTaskList(userIDEdited, token).then((response) => {
       setActivities(response);
-      console.log(response);
+      console.log(response)
     });
   }, []);
 
-  const handleEditTask = (event) => {
-    event.preventDefault();
-//ir para nova página editar a tarefa
-  };
-  const handleDeleteTask = (event) => {
-    event.preventDefault();
-//eliminar tarefa
-  };
-  const handleComplete = (event) => {
-    event.preventDefault();
-//ir para Fetch completar Task
-  };
-
-
  
   return (
-    <div className="Activity" id="activity-outer-container">
+    <div className="user-Activity" id="activity-outer-container">
       <Sidebar
-        pageWrapId={"activity-page-wrap"}
-        outerContainerId={"activity-outer-container"}
+        pageWrapId={"user-activity-page-wrap"}
+        outerContainerId={"user-activity-outer-container"}
       />
-      <div className="page-wrap" id="activity-page-wrap">
-        <h1>My Activities</h1>
+      <div className="page-wrap" id="user-activity-page-wrap">
+        <h4>User Activities</h4>
         <div>
           <table className="tables" cellPadding="0" cellSpacing="0">
             <thead>
@@ -71,7 +53,7 @@ function Activity() {
                 <th>Title</th>
                 <th>Category</th>
                 <th>Description</th>
-                <th>Actions</th>
+                <th>Done</th>
               </tr>
             </thead>
             <tbody>
@@ -81,22 +63,14 @@ function Activity() {
                   <td>{task.title}</td>
                   <td>{task.categoryTitle}</td>
                   <td>{task.details}</td>
-                  <td>
-                   <CheckBox title="Done" defaultChecked={task.done ?'true':'false'} onClick={handleComplete} />
-                     <BtnEdit onClick={handleEditTask}/>
-                      <BtnDelete onClick={handleDeleteTask}/>
-                  </td>
+                  <td>{task.done?'yes':'no'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div>
-      
-
-        </div>
       </div>
     </div>
   );
 }
-export default Activity;
+export default Activity_of_User;

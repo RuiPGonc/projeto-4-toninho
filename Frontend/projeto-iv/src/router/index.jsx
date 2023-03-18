@@ -8,6 +8,8 @@ import Activity from "../pages/showTaskList/showTaskList";
 import Profile from "../pages/profile/profile";
 import Register from "../pages/register/register";
 import NewTask from "../pages/newTasks/newTask";
+import Users from "../pages/usersList/comunity";
+import Profile_admin from "../pages/profile_admin/profile_admin";
 
 export const AppContext = createContext();
 
@@ -44,6 +46,9 @@ function AppRouter() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/newTask" element={<NewTask />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/profile_admin" element={<Profile_admin />} />
+
         </Routes>
       </Router>
     </AppContext.Provider>

@@ -9,9 +9,9 @@ export default function Select({ text, name, options, handleOnChange, value }) {
         onChange={handleOnChange}
         value={value || ""}
       >
-        <option>Select one Category</option>
+        <option value="" disabled>Select one Category</option>
         {options.map((option) => (
-          <option value={option.id} key={option.id}>
+          <option key={option.categoryId} value={option.categoryId} id={option.categoryId} >
             {option.title}
           </option>
         ))}

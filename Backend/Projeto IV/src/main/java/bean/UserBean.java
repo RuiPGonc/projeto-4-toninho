@@ -48,7 +48,7 @@ public class UserBean implements Serializable {
 	
 	public void CRIAR_oBJETOS_TESTE() {
 		
-		UserDto novoAdmin=new UserDto("admin", "Dr Helder", "Antunes", "aa@sapo.pt", "234324", "aaaa","0000", "yes");
+		UserDto novoAdmin=new UserDto("admin", "Dr Helder", "Antunes", "aa@sapo.pt", "234324", "aaaa","0000", true);
 	
 		//cirar o user
 		Long userId = 999L;
@@ -254,6 +254,8 @@ categoryDao.persistNewCategory(createCategory);
 				user.setEmail(a.getEmail());
 				user.setPhone(a.getPhone());
 				user.setPhotoUrl(a.getPhotoUrl());
+				user.setUserId(a.getUserId());
+				user.setAdmin(a.getAdmin());
 
 				userListDto.add(user);
 			}

@@ -11,7 +11,7 @@ export default (props) => {
   const [showUserLink, setShowUserLink] = useState(false);
 
   useEffect(() => {
-    if (adminCredentials === "yes") {
+    if (adminCredentials === true) {
       setShowUserLink(true);
     }
   });
@@ -20,8 +20,7 @@ export default (props) => {
   };
 
   return (
-    // <AppContext.Provider value={credentials}>
-    <Menu>
+        <Menu>
       <a className="menu-item" href="/home">
         Home
       </a>
@@ -42,7 +41,16 @@ export default (props) => {
       >
         Register New User
       </a>
+      <a
+        className="menu-item"
+        id="users-link"
+        href="/users"
+        style={showUserLinkStyle}
+      >
+        Comunity
+      </a>
     </Menu>
-    //</AppContext.Provider>
+    
+ 
   );
 };

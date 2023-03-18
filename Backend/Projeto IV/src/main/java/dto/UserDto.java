@@ -15,7 +15,7 @@ public class UserDto {
 	private String phone;
 	private String photoUrl;
 	private String token;
-	private String admin ="no";
+	private boolean admin =false;
 	private String state="ativa";
 	
 
@@ -26,7 +26,7 @@ public class UserDto {
 	}
 	
 	// cria construtor parametrizado para o objeto User
-	public UserDto(String username, String firstName, String lastName, String email, String phone, String photoUrl, String token, String admin) {
+	public UserDto(String username, String firstName, String lastName, String email, String phone, String photoUrl, String token, boolean admin) {
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -90,11 +90,11 @@ public class UserDto {
 	}
 	
 	
-	public String getAdmin() {
+	public boolean getAdmin() {
 		return admin;
 	}
 
-	public void setAdmin(String admin) {
+	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}
 

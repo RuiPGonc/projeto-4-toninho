@@ -70,14 +70,6 @@ public class SessionLogin implements Serializable{
 		return token;
 	}
 	
-	//public String getUsername() {
-	//	return username;
-	//}
-
-	//public void setUsername(String username) {
-	//	this.username = username;
-	//}
-
 	public void setToken(String token) {
 		this.token=token;
 	}
@@ -90,7 +82,7 @@ public class SessionLogin implements Serializable{
 		this.sessionOwner = sessionOwner;
 	}
 	public long createTimeSession() {
-		final int timeOutSession = 300000; // 5min em miliseg.
+		final int timeOutSession = 60000; // 5min em miliseg.
 		long timeSession = Calendar.getInstance().getTimeInMillis() + timeOutSession;
 		
 		return timeSession;

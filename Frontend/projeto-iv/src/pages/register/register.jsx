@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/generics/btnSubmit";
 import Input from "../../components/form/input";
 import { AppContext } from "../../router/index";
-import { createNewUser } from "./actions";
+import { createNewUser, createNewAdmin } from "./actions";
 import { useStore } from "../../store/userStore";
+import HomePageButton from "../../components/generics/goHome";
+import Sidebar from "../../components/navbar/Sidebar";
+
 
 export default function Register() {
   const navigate = useNavigate();
@@ -14,33 +17,44 @@ export default function Register() {
 
   //para guardar os valores da password e da password de confirmação
   const [arrayPassword, setPassword] = useState({});
-  let userPassword = "";
-  const takePassword = (event) => {
+  let userPassword = "123";
+  /* const takePassword = (event) => {
     const name = event.target.name;
     const value = event.target.value;
     setPassword((values) => ({ ...values, [name]: value }));
-  };
-  function confirmPassword() {
+  };*/
+  /*function confirmPassword() {
     if (arrayPassword.confirmPassword === arrayPassword.password) {
       userPassword = arrayPassword.password;
     } else {
       console.log("As passwords não correspondem");
     }
-  }
+  }*/
 
   const handleChange = (event) => {
-    console.log("aquiiiii");
+    //console.log("aquiiiii");
     const name = event.target.name;
     const value = event.target.value;
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit_user = async (event) => {
     event.preventDefault();
 
-    confirmPassword();
-    console.log(userPassword);
+    //confirmPassword();
     createNewUser(token, inputs, userPassword).then((response) => {
+      if (response === "ok") {
+        console.log("Sucess!");
+        navigate("/login", { replace: true });
+      }
+    });
+  };
+  const handleSubmit_admin = async (event) => {
+    event.preventDefault();
+
+    //confirmPassword();
+    console.log(userPassword);
+    createNewAdmin(token, inputs, userPassword).then((response) => {
       if (response === "ok") {
         console.log("Sucess!");
         navigate("/login", { replace: true });
@@ -54,7 +68,13 @@ export default function Register() {
 
   return (
     <div className="Register" id="register-form">
-      <form onSubmit={handleSubmit}>
+        <Sidebar
+        pageWrapId={"register-page-wrap"}
+        outerContainerId={"register-outer-container"}
+      />
+      <div className="page-wrap" id="register-page-wrap">
+      <h1>New User</h1>
+      <form >
         <Input
           type="text"
           text="Username"
@@ -98,22 +118,18 @@ export default function Register() {
           handleOnChange={handleChange}
         />
         <Input
-          type="password"
+          type="text"
           text="Password"
           name="password"
-          defaultValue=""
-          handleOnChange={takePassword}
+          placeholder="default password"
+          disabled
         />
-        <Input
-          type="password"
-          text="Confirm Password"
-          name="confirmPassword"
-          defaultValue=""
-          handleOnChange={takePassword}
-        />
-        <SubmitButton text="Create User" onClick={handleSubmit} />
+
+        <SubmitButton text="Create Normal User" onClick={handleSubmit_user} />
+        <SubmitButton text="Create Admin User" onClick={handleSubmit_admin} />
       </form>
-      <SubmitButton text="back" onClick={goHome} />
+      <div>{HomePageButton()}</div>
+    </div>
     </div>
   );
 }

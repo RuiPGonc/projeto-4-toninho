@@ -1,7 +1,9 @@
-export async function getUserCategoryList(userId, token) {
+export async function getUserInfo(token, userId) {
   try {
+    console.log(token)
+    console.log(userId)
     return await fetch(
-      `http://localhost:8080/Projeto-iv/rest/ToDo_app/users/categories/${userId}`,
+      `http://localhost:8080/Projeto-iv/rest/ToDo_app/users/info/${userId}`,
       {
         method: "GET",
         headers: {
@@ -12,17 +14,19 @@ export async function getUserCategoryList(userId, token) {
     )
       .then((response) => response.json())
       .then((response) => {
-        const list = [...response];
-        return list;
+          console.log(response)
+        //const list = [...response];
+        return response;
       });
   } catch (error) {
     console.error(error);
   }
 }
-export async function createNewTask(token, task) {
+
+export async function updateUserInfo(token, userInfo, userId) {
   try {
     return await fetch(
-      `http://localhost:8080/Projeto-iv/rest/ToDo_app/users/task`,
+      `http://localhost:8080/Projeto-iv/rest/ToDo_app/users/${userId}`,
       {
         method: "POST",
         headers: {
@@ -30,7 +34,7 @@ export async function createNewTask(token, task) {
           "Content-Type": "application/json",
           token: token,
         },
-        body: JSON.stringify(task),
+        body: JSON.stringify(userInfo),
       }
     )
       .then((response) => response.json())
