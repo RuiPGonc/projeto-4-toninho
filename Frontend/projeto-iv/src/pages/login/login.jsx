@@ -13,7 +13,6 @@ function Login() {
   const updateAdminCredentials = useStore(
     (state) => state.updateAdminCredentials
   );
-
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -30,13 +29,9 @@ function Login() {
       updateUserId(response.userId);
       console.log(response.adminCredentials);
       updateAdminCredentials(response.adminCredentials);
+
+      navigate("/home");
     });
-
-    //localStorage.setItem("username", inputs.username);
-    // setCredentials(response); //atualizar o token e o UserId no AppContext
-    // updateUserId(response.userId);
-
-    navigate("/home");
   };
 
   function goToRegisterPage() {

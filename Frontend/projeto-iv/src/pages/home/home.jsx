@@ -9,7 +9,6 @@ import SubmitButton from "../../components/generics/btnSubmit";
 
 function Home() {
   const username = useStore((state) => state.username);
-  console.log({ username });
 
   const navigate = useNavigate();
 

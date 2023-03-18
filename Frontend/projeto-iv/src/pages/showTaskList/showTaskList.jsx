@@ -14,24 +14,19 @@ import BtnEdit from "../../components/generics/btnEdit";
 
 function Activity() {
   const [myactivities, setActivities] = useState([]);
-  //const [inputs, setInputs] = useState({});
 
-  //const { credentials } = useContext(AppContext);
   const navigate = useNavigate();
 
-  //const username=useStore((state)=>state.username);
   const userId = useStore((state) => state.userId);
   const token = useStore((state) => state.token);
-  // const userIDEdited = useStore((state) => state.editedUserId);
 
   //se não estiver logado é redirecionado para a pagina de login
   useEffect(() => {
     if (userId) {
       getUserTaskList(userId, token).then((response) => {
         setActivities(response);
-        console.log(response);
       });
-    } else {
+    } else if (!userId) {
       navigate("/");
     }
   }, [userId]);
@@ -57,6 +52,7 @@ function Activity() {
       />
       <div className="page-wrap" id="activity-page-wrap">
         <h1>My Activities</h1>
+
         <div>
           <table className="tables" cellPadding="0" cellSpacing="0">
             <thead>
@@ -79,7 +75,7 @@ function Activity() {
                       <td>
                         <CheckBox
                           title="Done"
-                          defaultChecked={task.done ? "true" : "false"}
+                          defaultChecked={task.done ? true : false}
                           onClick={handleComplete}
                         />
                         <BtnEdit onClick={handleEditTask} />

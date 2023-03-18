@@ -8,7 +8,7 @@ import HomePageButton from "../../components/generics/goHome";
 import Input from "../../components/form/input";
 import SubmitButton from "../../components/generics/btnSubmit";
 import BtnFilter from "../../components/generics/btnFilter";
-import BtnLogout from "../logout/components/btnLogout";
+import Logout from "../logout/logout";
 
 import ShowUsers from "./showUsersList/showUsers";
 
@@ -16,8 +16,6 @@ function Users() {
   //const{credentials}=useContext(AppContext);
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
-  const [userInfo, setUserInfo] = useState([]);
-  const token = useStore((state) => state.token);
   const userId = useStore((state) => state.userId);
   const [admins, setAdmins] = useState([true]);
 
@@ -33,12 +31,6 @@ function Users() {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  //obter info do User Logado
-  useEffect(() => {
-    //getUserInfo(token).then((response) => {
-    // setUserInfo(response);
-    // });
-  }, []);
   const handleGetAdmins = async (event) => {
     setAdmins(true);
     event.preventDefault();
@@ -58,10 +50,12 @@ function Users() {
         <div>
           <ShowUsers value={admins} />
         </div>
-        <div>{HomePageButton()}</div>
+        <div>
+          <HomePageButton />
+        </div>
       </div>
       <div>
-        <BtnLogout />
+        <Logout />
       </div>
     </div>
   );
