@@ -17,21 +17,20 @@ import Activity_of_User from "./showTaskListOfUser";
 import ConfirmBox from "../usersList/components/confirmBox";
 
 function Profile_admin() {
-  const { isLogin } = useContext(AppContext);
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
   const [userInfo, setUserInfo] = useState([]);
   const token = useStore((state) => state.token);
-  //const userId = useStore((state) => state.userId);
+  const userId = useStore((state) => state.userId);
   const editedUserId = useStore((state) => state.editedUserId);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [showConfirmBox, setShowConfirmBox] = useState(false);
 
   useEffect(() => {
-    if (!isLogin) {
-      //navigate("/", { replace: true });
+    if (!userId) {
+      navigate("/");
     }
-  }, [isLogin]);
+  }, [userId]);
 
   const handleChange = (event) => {
     const name = event.target.name;

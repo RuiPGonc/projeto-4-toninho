@@ -11,32 +11,28 @@ import { useStore } from "../../store/userStore";
 
 function Activity_of_User() {
   const [myactivities, setActivities] = useState([]);
-
-  const { isLogin } = useContext(AppContext);
   const navigate = useNavigate();
 
   //const username=useStore((state)=>state.username);
   const userId = useStore((state) => state.userId);
   const token = useStore((state) => state.token);
- const userIDEdited = useStore((state) => state.editedUserId);
+  const userIDEdited = useStore((state) => state.editedUserId);
 
   //se não estiver logado é redirecionado para a pagina de login
   useEffect(() => {
-    if (!isLogin) {
-      //  navigate("/", { replace: true });
+    if (!userId) {
+      navigate("/");
     }
-  }, [isLogin]);
-
+  }, [userId]);
 
   useEffect(() => {
-  console.log("userIDEdited da storage "+userIDEdited)
+    console.log("userIDEdited da storage " + userIDEdited);
     getUserTaskList(userIDEdited, token).then((response) => {
       setActivities(response);
-      console.log(response)
+      console.log(response);
     });
   }, []);
 
- 
   return (
     <div className="user-Activity" id="activity-outer-container">
       <Sidebar
@@ -63,7 +59,7 @@ function Activity_of_User() {
                   <td>{task.title}</td>
                   <td>{task.categoryTitle}</td>
                   <td>{task.details}</td>
-                  <td>{task.done?'yes':'no'}</td>
+                  <td>{task.done ? "yes" : "no"}</td>
                 </tr>
               ))}
             </tbody>

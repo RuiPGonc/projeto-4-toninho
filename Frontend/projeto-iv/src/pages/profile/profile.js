@@ -10,7 +10,6 @@ import SubmitButton from "../../components/generics/btnSubmit";
 import { getUserInfo, updateUserInfo } from "./actions";
 
 function Profile() {
-  const { isLogin } = useContext(AppContext);
   //const{credentials}=useContext(AppContext);
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
@@ -19,10 +18,10 @@ function Profile() {
   const userId = useStore((state) => state.userId);
 
   useEffect(() => {
-    if (!isLogin) {
-      //navigate("/", { replace: true });
+    if (!userId) {
+      navigate("/");
     }
-  }, [isLogin]);
+  }, [userId]);
 
   const handleChange = (event) => {
     const name = event.target.name;

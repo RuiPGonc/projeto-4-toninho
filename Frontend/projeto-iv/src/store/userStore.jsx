@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import React from "react";
+
 //define the store
 export const useStore = create(
   persist(
@@ -18,7 +19,7 @@ export const useStore = create(
     }),
     {
       name: "my-store", //nome usado para os presisted data
-      sotrage: createJSONStorage(() => sessionStorage), //mecanismo de armazenamento
+      storage: createJSONStorage(() => sessionStorage), //mecanismo de armazenamento
     }
   )
 );

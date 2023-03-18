@@ -8,12 +8,11 @@ import HomePageButton from "../../components/generics/goHome";
 import Input from "../../components/form/input";
 import SubmitButton from "../../components/generics/btnSubmit";
 import BtnFilter from "../../components/generics/btnFilter";
-import BtnLogout from"../logout/components/btnLogout"
+import BtnLogout from "../logout/components/btnLogout";
 
 import ShowUsers from "./showUsersList/showUsers";
 
 function Users() {
-  const { isLogin } = useContext(AppContext);
   //const{credentials}=useContext(AppContext);
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
@@ -23,10 +22,10 @@ function Users() {
   const [admins, setAdmins] = useState([true]);
 
   useEffect(() => {
-    if (!isLogin) {
-      //navigate("/", { replace: true });
+    if (!userId) {
+      navigate("/");
     }
-  }, [isLogin]);
+  }, [userId]);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -62,7 +61,7 @@ function Users() {
         <div>{HomePageButton()}</div>
       </div>
       <div>
-        <BtnLogout/>
+        <BtnLogout />
       </div>
     </div>
   );

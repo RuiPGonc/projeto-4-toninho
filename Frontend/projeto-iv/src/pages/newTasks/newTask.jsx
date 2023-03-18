@@ -11,10 +11,9 @@ import SwitchButton from "./components/switchButton";
 import getCurrentDateTime from "../../components/generics/systemDateTime";
 import setObject_to_Fetch from "./objectNewTask";
 import dateTime_format from "../../components/generics/dateTimeFormated";
-import HomePageButton from "../../components/generics/goHome"
+import HomePageButton from "../../components/generics/goHome";
 
 export default function NewTask() {
-  const { isLogin } = useContext(AppContext);
   const token = useStore((state) => state.token);
   const navigate = useNavigate();
   const userId = useStore((state) => state.userId);
@@ -33,7 +32,7 @@ export default function NewTask() {
   //definição de objeto para guardar datas
   const [dateObject, setDates] = useState([]);
   //variável para o Id da Categoria
-  const[categoryId,setCategory]=useState(categoryId);
+  const [categoryId, setCategory] = useState(categoryId);
 
   //obter a lsita de categorias do User
   useEffect(() => {
@@ -41,19 +40,18 @@ export default function NewTask() {
       setCategories(response);
     });
   }, []);
+
   //se não estiver logado é redirecionado para a pagina de login
   useEffect(() => {
-    if (!isLogin) {
-      //  navigate("/", { replace: true });
+    if (!userId) {
+      navigate("/", { replace: true });
     }
-  }, [isLogin]);
-
- 
+  }, [userId]);
 
   //obter o id da Categoria
-  const handleCategory = (event) =>{
-    setCategory(()=>({['categoryId']:event.target.value}));
-  }
+  const handleCategory = (event) => {
+    setCategory(() => ({ ["categoryId"]: event.target.value }));
+  };
   //construção do objeto Inputs
   const handleChange = (event) => {
     const name = event.target.name;
@@ -83,10 +81,10 @@ export default function NewTask() {
   const handleChangeDates = (event) => {
     const name = event.target.name;
     const date = event.target.valueAsDate;
-    const dateTime =dateTime_format(date) ;
+    const dateTime = dateTime_format(date);
 
     setDates((values) => ({ ...values, [name]: dateTime }));
-    console.log(dateTime)
+    console.log(dateTime);
   };
 
   //chamada do Fetch
@@ -115,7 +113,7 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
       doneValue
     );
 
-   createNewTask(token, object_Task).then((response) => {
+    createNewTask(token, object_Task).then((response) => {
       if (response === "ok") {
         console.log("Sucess!");
         // navigate("/login", { replace: true });
@@ -133,7 +131,7 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
           type="text"
           text="Title"
           name="title"
-          defaultValue=""        
+          defaultValue=""
           handleOnChange={handleChange}
           required
         />
@@ -141,7 +139,7 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
           type="text"
           text="Details"
           name="details"
-          defaultValue=""   
+          defaultValue=""
           handleOnChange={handleChange}
         />
         <Select
@@ -149,7 +147,7 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
           text="Select a Category"
           options={myCategories}
           handleOnChange={handleCategory}
-          value = {categoryId || ""}
+          value={categoryId || ""}
           required
         />
         <Input
@@ -189,9 +187,7 @@ os ifs abaixo obrigam a que a data e hora seja bem preenchida
         />
       </div>
       <SubmitButton text="Create Task" onClick={handleSubmit} />
-     <div>
-    {HomePageButton()}
-     </div>
+      <div>{HomePageButton()}</div>
     </div>
   );
 }
